@@ -1,0 +1,6 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "python.pythonPath": "/Users/khan/ordermeal-env/bin/python",
+    "python.linting.pylintEnabled": false,
+    "python.formatting.formatOnSave": true
+}

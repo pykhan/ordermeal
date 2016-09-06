@@ -1,0 +1,11 @@
+{% extends 'web/base.html' %}
+
+{% block page_body %}
+    <p class="lead">
+        Order Lunch for your kids.
+    </p>
+    <p>
+        You must <a href="{% url 'ol:login' %}">login</a> to use the site. If you are not registered yet, 
+        please click the register <a href="{% url 'ol:register' %}">link</a> at the top right corner.
+    </p>
+{% endblock %}

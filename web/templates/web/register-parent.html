@@ -1,0 +1,282 @@
+{% extends 'web/base.html' %}
+{% load widget_tweaks %}
+
+{% block style %}
+    .error_title {
+        background-color: yellow;
+        color: red;
+        font-weight: bold;
+    }
+    .error_list {
+        color: red;
+    }
+{% endblock %}
+
+{% block page_body %}
+    <!--<p class="lead">You must register to be able to order</p>-->
+    <h3>Title</h3>
+    <p>
+        Other than the docto's info, please complete the entire form. These information are necessary
+        to get in touch with you in case of emergency.
+    </p>
+
+    <div id="register">
+        {% if user_form.errors or parent_profile_form.errors or child_form.errors or doctor_form.errors %}
+            <div class="row">
+                <div class="col-md-12 error_title">ERROR</div>
+                <div class="col-md-12 error_list">
+                    {{ user_form.errors }}
+                    {{ parent_profile_form.errors }}
+                    {{ child_form.errors }}
+                    {{ doctor_form.errors }}
+                </div>
+            </div>
+            <div>&nbsp;</div>
+        {% endif %}
+
+        <form class="form-horizontal" name="RegistrationForm" action="{% url 'web:register-parent' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                {# ACCESS INFO #}
+                <div class="col-md-6">
+                    <p class="lead">Access Info</p>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_username">Username</label>
+                        <div class="control">
+                            {{ user_form.username|attr:"placeholder:Username"|attr:"class:form-control"|attr:"autofocus:''" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_password">Password</label>
+                        <div class="control">
+                            {{ user_form.password|attr:"type:password"|attr:"placeholder:Password"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_password_again">Password (again)</label>
+                        <div class="control">
+                            {{ user_form.password_again|attr:"placeholder:Password (again)"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_username">First Name</label>
+                        <div class="control">
+                            {{ user_form.first_name|attr:"placeholder:First Name"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_username">Last Name</label>
+                        <div class="control">
+                            {{ user_form.last_name|attr:"placeholder:Last Name"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_email">Email</label>
+                        <div class="control">
+                            {{ user_form.email|attr:"placeholder:Email"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <p class="lead">Parent's Info</p>
+                    {# --------------- PARENT'S PROFILE ------------ #}
+                    <div class="control-group">
+                        <label class="sr-only" for="id_address_1">Address 1</label>
+                        <div class="control">
+                            {{ parent_profile_form.address_1|attr:"placeholder:Address 1"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_address_2">Address 2</label>
+                        <div class="control">
+                            {{ parent_profile_form.address_2|attr:"placeholder:Address 2"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_city">City</label>
+                        <div class="control">
+                            {{ parent_profile_form.city|attr:"placeholder:City"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_state">State</label>
+                        <div class="control">
+                            {{ parent_profile_form.state|attr:"placeholder:State"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_zip_code">Zip</label>
+                        <div class="control">
+                            {{ parent_profile_form.zip_code|attr:"placeholder:Zip"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_cell_phone">Cell Phone</label>
+                        <div class="control">
+                            {{ parent_profile_form.cell_phone|attr:"placeholder:Cell Phone (xxx-xxx-xxxx)"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_home_phone">Home Phone</label>
+                        <div class="control">
+                            {{ parent_profile_form.home_phone|attr:"placeholder:Home Phone (xxx-xxx-xxxx)"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_work_phone">Work Phone</label>
+                        <div class="control">
+                            {{ parent_profile_form.work_phone|attr:"placeholder:Work Phone (xxx-xxx-xxxx)"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <hr>
+                </div>
+                <div class="col-md-6">
+                    <p class="lead">Child's Info</p>
+                    {# First Child's Info #}
+                    <div class="control-group">
+                        <label class="sr-only" for="id_fchild_form-first_name">First Name</label>
+                        <div class="control">
+                            {{ child_form.first_name|attr:"placeholder:First Name"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_child_form-middle_name">Middle Name</label>
+                        <div class="control">
+                            {{ child_form.middle_name|attr:"placeholder:Middle Name"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_child_form-last_name">Last Name</label>
+                        <div class="control">
+                            {{ child_form.last_name|attr:"placeholder:Last Name"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <p>Child's Birthday:</p>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_child_form-birth_date">Birth Date</label>
+                        <div class="control">
+                            {{ child_form.birth_date }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="lead">Food Allergies?</p>
+                    <p>Please list all the allergies, one per line.</p>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_child_form-allergies">Allergies</label>
+                        <div class="control">
+                            {{ child_form.allergies }}
+                        </div>
+                    </div>
+                </div>
+                <div id="id_doctor_divider" class="col-md-12">
+                    <hr>
+                </div>
+                <div id="doctor" class="col-md-6">
+                    <p class="lead">Doctor's Info (<i>Optional</i>)</p>
+                    {# --------------- DOCTOR'S INFO ------------ #}
+                    <div class="control-group">
+                        <label class="sr-only" for="id_address_1">First Name</label>
+                        <div class="control">
+                            {{ doctor_form.first_name|attr:"placeholder:First Name"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_address_2">Middle Name</label>
+                        <div class="control">
+                            {{ doctor_form.middle_name|attr:"placeholder:Middle Name"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_city">Last Name</label>
+                        <div class="control">
+                            {{ doctor_form.last_name|attr:"placeholder:Last Name"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_state">Work Phone</label>
+                        <div class="control">
+                            {{ doctor_form.work_phone|attr:"placeholder:Work Phone (xxx-xxx-xxxx)"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_zip_code">Cell Phone</label>
+                        <div class="control">
+                            {{ doctor_form.cell_phone|attr:"placeholder:Cell Phone (xxx-xxx-xxxx)"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    {# --------------- DOCTOR'S ADDRESS ------------ #}
+                    <div class="control-group">
+                        <label class="sr-only" for="id_address_1">Address 1</label>
+                        <div class="control">
+                            {{ doctor_form.address_1|attr:"placeholder:Address 1"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_address_2">Address 2</label>
+                        <div class="control">
+                            {{ doctor_form.address_2|attr:"placeholder:Address 2"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_city">City</label>
+                        <div class="control">
+                            {{ doctor_form.city|attr:"placeholder:City"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_state">State</label>
+                        <div class="control">
+                            {{ doctor_form.state|attr:"placeholder:State"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="sr-only" for="id_zip_code">Zip</label>
+                        <div class="control">
+                            {{ doctor_form.zip_code|attr:"placeholder:Zip"|attr:"class:form-control" }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    <div class="control-group">
+                        <div class="controls">
+                            <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+                        </div>
+                    </div>
+                </div>
+            </div> {# div:row #}
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+
+    $("#id_doctor_divider").hide();
+    $("#doctor").hide();
+    
+    $("#id_child_form-first_name").change(function(event){
+        if ($("#id_child_form-first_name").val().trim() != ""){
+            $("#id_child_form-last_name").change(function(event){
+                if ( $("#id_child_form-last_name").val().trim() != "" ){
+                    $("#id_doctor_divider").show();
+                    $("#doctor").show();
+                }
+                else{
+                    $("#id_doctor_divider").hide();
+                    $("#doctor").hide();
+                }
+            });
+        }
+        else{
+            $("#id_doctor_divider").hide();
+            $("#doctor").hide();
+        }
+    });
+    
+{% endblock %}
