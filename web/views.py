@@ -183,16 +183,3 @@ class CartView(TemplateView):
 ##################################################################################################
 
 
-# class OrderView(LoginRequiredMixin, FormView):
-#     template_name = 'web/order.html'
-#     form_class = OrderForm
-#     success_url = reverse_lazy('web:order_confirmation')
-
-#     def get_context_data(self, **kwargs):
-#         context = super(OrderView, self).get_context_data(**kwargs)
-#         context["page_header"] = "Order Meals"
-#         context["order_form"] = context.pop("form")
-#         return context
-
-#     def form_valid(self, form):
-#         return super(OrderView, self).form_valid(form)
