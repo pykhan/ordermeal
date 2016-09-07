@@ -1,8 +1,9 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+ordermeal/__pycache__/
+web/__pycache__/
+web/migrations/__pycache__/
 *.py[cod]
-*.pyc
-*.pyo
 *$py.class
 
 # C extensions
