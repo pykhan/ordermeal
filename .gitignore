@@ -1,6 +1,11 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.cpython-35.pyc
+ordermeal/__pycache__/settings.cpython-35.pyc
+web/__pycache__/admin.cpython-35.pyc
+web/__pycache__/models.cpython-35.pyc
+web/__pycache__/urls.cpython-35.pyc
+web/__pycache__/views.cpython-35.pyc
+web/migrations/__pycache__/0001_initial.cpython-35.pyc
 *.py[cod]
 *$py.class
 
