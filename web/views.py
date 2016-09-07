@@ -3,14 +3,13 @@ import logging
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.generic import (FormView, TemplateView, RedirectView, CreateView)
+from django.views.generic import (FormView, TemplateView, RedirectView)
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 
 from web.forms import (DoctorForm, ChildForm, 
                         UserForm, ParentProfileForm, LoginForm)
-from web.cart import Cart
 from web.models import Product
 
 
@@ -183,3 +182,10 @@ class CartView(TemplateView):
 ##################################################################################################
 
 
+class OrderView(LoginRequiredMixin, TemplateView):
+    template_name = 'web/order.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(OrderView, self).get_context_data(**kwargs)
+        context["page_header"] = "Enter your order"
+        return context

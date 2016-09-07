@@ -1,22 +1,11 @@
 from django.contrib import admin
 
-from web.models import (Ingredient, Category, Product, Doctor, Child, ParentProfile)
+from web.models import (Category, Product, Doctor, Child, ParentProfile)
 
 
-# @admin.register(Ingredient)
-# class IngredientAdmin(admin.ModelAdmin):
-#     list_display = ('name', 'allergy')
-
-
-# @admin.register(Category)
-# class CategoryAdmin(admin.ModelAdmin):
-#     list_display = ('name', )
-
-
-# @admin.register(Product)
-# class ProductAdmin(admin.ModelAdmin):
-#     list_display = ('name', 'category', 'unit_price', 'description', 'ingredient', 'expires_at')
-#     empty_value_display = '-empty-'
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', )
 
 
 @admin.register(Doctor)
@@ -38,19 +27,7 @@ class ParentProfileAdmin(admin.ModelAdmin):
     empty_value_display = '-empty-'
 
 
-# @admin.register(Item)
-# class ItemAdmin(admin.ModelAdmin):
-#     list_display = ('name', 'description', 'category', 'price', 'expire_at')
-#     empty_value_display = '-empty-'
-
-
-# @admin.register(Category)
-# class CategoryAdmin(admin.ModelAdmin):
-#     list_display = ('name', 'updated_at')
-#     empty_value_display = '-empty-'
-
-
-# @admin.register(Product)
-# class ProductAdmin(admin.ModelAdmin):
-#     list_display = ('name', 'unit_price', 'description', 'category', 'expires_at')
-#     ordering = ('expires_at', 'category', 'name')
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'unit_price', 'description', 'category', 'expires_at')
+    ordering = ('expires_at', 'category', 'name')

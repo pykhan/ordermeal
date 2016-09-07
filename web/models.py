@@ -74,17 +74,6 @@ class Doctor(ModelSaveMixin, models.Model):
         verbose_name_plural = _("Doctors")
 
 
-class Ingredient(ModelSaveMixin, models.Model):
-    name = models.CharField(max_length=50, verbose_name="Ingredient")
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = _("Ingredient")
-        verbose_name_plural = _("Ingredients")
-
-
 class Category(ModelSaveMixin, models.Model):
     name = models.CharField(max_length=50, verbose_name="Category Name")
 
@@ -100,7 +89,6 @@ class Product(ModelSaveMixin, models.Model):
     name = models.CharField(max_length=50)
     unit_price = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.TextField(verbose_name=_('Description'), blank=True, null=True)
-    ingredient = models.ForeignKey(Ingredient, verbose_name=_('Ingredient'))
     category = models.ForeignKey(Category)
     expires_at = models.DateField(verbose_name=_('Expires At'), blank=True, null=True)
 
