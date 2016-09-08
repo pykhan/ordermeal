@@ -90,6 +90,7 @@ class Product(ModelSaveMixin, models.Model):
     unit_price = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.TextField(verbose_name=_('Description'), blank=True, null=True)
     category = models.ForeignKey(Category)
+    is_active = models.BooleanField(verbose_name=_('Active ?'), default=True)
     expires_at = models.DateField(verbose_name=_('Expires At'), blank=True, null=True)
 
     def __str__(self):

@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.contrib import sessions
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
@@ -38,39 +40,30 @@ API_CODES = {
 }
 
 
-@login_required
-def get_products(request, product_id=None):
-    api_resp = {}
+def get_all_products(product_id=None):
     if product_id:
-        products = Product.objects.filter(id=product_id)
-        if products:
-            product = products[0]
-            api_resp.update(status='success',
-                payloads=[{
-                    product.id: {
-                        'name': product.name,
-                        'unit_price': product.unit_price,
-                        'description': product.description,
-                        'category_id': product.category.id,
-                        'expires_at': product.expires_at
-                    }
-                }])
-        else:
-            api_resp.update(status='failure', payloads=[API_CODES.get('E-101')])
+        products = Product.objects.filter(id=product_id, is_active=True, expires_at__gte=date.today())
     else:
-        products = Product.objects.all()
-        payloads = []
-        for product in Product.objects.all():
-            payloads.append({
-                product.id: {
+        products = Product.objects.filter(is_active=True, expires_at__gte=date.today())
+    products_json = []
+    for product in products:
+        products_json.append({
+            product.id: {
                     'name': product.name,
                     'unit_price': product.unit_price,
                     'description': product.description,
-                    'category_id': product.category.id,
-                    'expires_at': product.expires_at
+                    'category_id': product.category.id
                 }
-            })
-        api_resp.update(status='success', message=payloads)
+        })
+    return products_json
+
+
+@login_required
+def get_products(request, product_id=None):
+    api_resp = {
+        'status': 'success',
+        'payloads': get_all_products(product_id=product_id)
+    }
     return JsonResponse(api_resp)
 
 

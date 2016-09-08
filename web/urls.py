@@ -1,14 +1,13 @@
 from django.conf.urls import url
 
 from web.views import (LoginView, LogoutView, HomeView, ContactView, 
-    RegisterParentView, CartView, RegisterSuccessView, RegistrationView)
+    RegisterParentView, OrderView, RegisterSuccessView, RegistrationView)
 from web import api
 
 
 urlpatterns = [
     url(r'^(home)?$', HomeView.as_view(), name='home'),
     url(r'^contact$', ContactView.as_view(), name='contact'),
-    url(r'^cart$', CartView.as_view(), name='cart'),
 
     ## site access url
     url(r'^register$', RegistrationView.as_view(), name='register'),
@@ -18,6 +17,7 @@ urlpatterns = [
     url(r'^logout$', LogoutView.as_view(), name='logout'),
 
     ## login required
+    url(r'^order$', OrderView.as_view(), name='shop'),
     url(r'^api/get-cart$', api.get_cart, name='api-cart'),
     url(r'^api/update-cart/(?P<product_id>(\w+))/(?P<quantity>(\d{1,2}))$', api.update_cart, name='api-update-cart'),
     url(r'^api/remove-from-cart/(?P<product_id>(\w+))$', api.remove_from_cart, name='api-remove-from-cart'),

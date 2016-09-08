@@ -8,6 +8,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 
+from web.api import get_all_products
 from web.forms import (DoctorForm, ChildForm, 
                         UserForm, ParentProfileForm, LoginForm)
 from web.models import Product
@@ -20,7 +21,7 @@ class LoginRequiredMixin(object):
     
     @method_decorator(login_required(login_url='/web/login/'))
     def dispatch(self, request, *args, **kwargs):
-        super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
+        return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
 class HomeView(TemplateView):
@@ -109,10 +110,6 @@ class RegisterParentView(FormView):
             print("invalid form")
         return super(RegisterParentView, self).post(request, *args, **kwargs)
 
-    def form_valid(self, form, **kwargs):
-        print()
-        return super(RegisterParentView, self).form_valid(form)
-
     def form_invalid(self, form):
         print("invalid registration: %s" % form.errors)
         return super(RegisterParentView, self).form_invalid(form)
@@ -170,15 +167,6 @@ class LogoutView(RedirectView):
         return super(LogoutView, self).dispatch(request, *args, **kwargs)
 
 
-class CartView(TemplateView):
-    template_name = 'web/cart.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super(CartView, self).get_context_data(**kwargs)
-        context['cart'] = Cart(self.request)
-        return context
-
-
 ##################################################################################################
 
 
@@ -187,5 +175,8 @@ class OrderView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(OrderView, self).get_context_data(**kwargs)
-        context["page_header"] = "Enter your order"
+        context["page_header"] = "Order"
+        products = get_all_products()
+        print(products)
+        context["products"] = products
         return context
