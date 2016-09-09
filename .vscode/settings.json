@@ -2,5 +2,8 @@
 {
     "python.pythonPath": "/Users/khan/ordermeal-env/bin/python",
     "python.linting.pylintEnabled": false,
-    "python.formatting.formatOnSave": true
+    "python.formatting.formatOnSave": true,
+    "files.trimTrailingWhitespace": true,
+    "files.autoSave": "onWindowChange",
+    "extensions.autoUpdate": true
 }

@@ -7,9 +7,10 @@ from django.views.generic import (FormView, TemplateView, RedirectView)
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
+from paypal.standard.forms import PayPalPaymentsForm
 
 from web.api import get_all_products
-from web.forms import (DoctorForm, ChildForm, 
+from web.forms import (DoctorForm, ChildForm,
                         UserForm, ParentProfileForm, LoginForm)
 from web.models import Product
 
@@ -18,7 +19,7 @@ log = logging.getLogger(__name__)
 
 
 class LoginRequiredMixin(object):
-    
+
     @method_decorator(login_required(login_url='/web/login/'))
     def dispatch(self, request, *args, **kwargs):
         return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
@@ -104,7 +105,7 @@ class RegisterParentView(FormView):
                     doctor = self.doctor_form.save(commit=False)
                     doctor.child_id = child_id
                     doctor.save()
-                
+
             return HttpResponseRedirect('/web/register/success')
         else:
             print("invalid form")
@@ -180,3 +181,26 @@ class OrderView(LoginRequiredMixin, TemplateView):
         print(products)
         context["products"] = products
         return context
+
+
+class PaymentView(LoginRequiredMixin, FormView):
+    form_class = PayPalPaymentsForm
+    template_name = 'web/payment.html'
+
+    def __init__(self, *args, **kwargs):
+        print(reverse_lazy('paypal-ipn'))
+        self._paypal_init_val = {
+            "business": "receiver_email@example.com",
+            "amount": "0.99",
+            "item_name": "name of the item",
+            "invoice": "unique-invoice-id",
+            "notify_url": "https://www.example.com" + reverse('paypal-ipn'),
+            "return_url": "https://www.example.com/your-return-location/",
+            "cancel_return": "https://www.example.com/your-cancel-location/",
+        }
+        return self(PaymentView, self).__init__(*args, **kwargs)
+
+        def get_context_data(self, **kwargs):
+            context = super(PaymentView, self).get_context_data(**kwargs)
+            context["form"] = self.form_class(initial=self._paypal_init_val)
+            return context
