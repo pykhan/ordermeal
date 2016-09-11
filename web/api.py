@@ -24,15 +24,15 @@ API_CODES = {
     'E-104': {
         'code': 'E-104',
         'message': 'Cart is empty.'
-    }, 
+    },
     'E-105': {
         'code': 'E-105',
         'message': 'Item dos not exist in cart. Nothing to remove.'
-    }, 
+    },
     'S-101': {
         'code': 'S-101',
         'message': 'Cart has been updated successfully.'
-    }, 
+    },
     'S-102': {
         'code': 'S-102',
         'message': 'Item has been removed successfully.'
@@ -54,6 +54,23 @@ def get_all_products(product_id=None):
                     'description': product.description,
                     'category_id': product.category.id
                 }
+        })
+    return products_json
+
+
+def get_all_products2(product_id=None):
+    if product_id:
+        products = Product.objects.filter(id=product_id, expires_at__gte=date.today()).exclude(is_active=False)
+    else:
+        products = Product.objects.filter(is_active=True, expires_at__gte=date.today())
+    products_json = []
+    for product in products:
+        products_json.append({
+            'id': product.id,
+            'name': product.name,
+            'unit_price': product.unit_price,
+            'description': product.description,
+            'category_id': product.category.id
         })
     return products_json
 
@@ -106,7 +123,7 @@ def update_cart(request, product_id, quantity):
         api_resp.update(status='failure', payloads=[API_CODES.get('E-103')])
         print("Error: update_cart: %s" % e)
     else:
-        if product_id not in cart:    
+        if product_id not in cart:
             cart[product_id] = {
                 'name': product.name,
                 'quantity': str(quantity),
@@ -140,7 +157,7 @@ def remove_from_cart(request, product_id):
         api_resp.update(status='success', payloads=[API_CODES.get('S-102')])
     else:
         api_resp.update(status='failure', payloads=[API_CODES.get('E-105')])
-    
+
     return JsonResponse(api_resp)
 
 

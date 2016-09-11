@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from paypal.standard.forms import PayPalPaymentsForm
 
-from web.api import get_all_products
+from web.api import get_all_products2
 from web.forms import (DoctorForm, ChildForm,
                         UserForm, ParentProfileForm, LoginForm)
 from web.models import Product
@@ -177,7 +177,7 @@ class OrderView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(OrderView, self).get_context_data(**kwargs)
         context["page_header"] = "Order"
-        products = get_all_products()
+        products = get_all_products2()
         print(products)
         context["products"] = products
         return context
@@ -187,9 +187,14 @@ class PaymentView(LoginRequiredMixin, FormView):
     form_class = PayPalPaymentsForm
     template_name = 'web/payment.html'
 
-    def __init__(self, *args, **kwargs):
-        print(reverse_lazy('paypal-ipn'))
-        self._paypal_init_val = {
+    def get_context_data(self, **kwargs):
+        context = super(PaymentView, self).get_context_data(**kwargs)
+        context["page_header"] = "Payment"
+        return context
+
+    def get_initial(self):
+        initial = super(PaymentView, self).get_initial()
+        initial.update({
             "business": "receiver_email@example.com",
             "amount": "0.99",
             "item_name": "name of the item",
@@ -197,10 +202,5 @@ class PaymentView(LoginRequiredMixin, FormView):
             "notify_url": "https://www.example.com" + reverse('paypal-ipn'),
             "return_url": "https://www.example.com/your-return-location/",
             "cancel_return": "https://www.example.com/your-cancel-location/",
-        }
-        return self(PaymentView, self).__init__(*args, **kwargs)
-
-        def get_context_data(self, **kwargs):
-            context = super(PaymentView, self).get_context_data(**kwargs)
-            context["form"] = self.form_class(initial=self._paypal_init_val)
-            return context
+        })
+        return initial
