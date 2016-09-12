@@ -7,7 +7,7 @@ from django.views.generic import (FormView, TemplateView, RedirectView)
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
-from paypal.standard.forms import PayPalPaymentsForm
+#from paypal.standard.forms import PayPalPaymentsForm
 
 from web.api import get_all_products2
 from web.forms import (DoctorForm, ChildForm,
@@ -190,24 +190,24 @@ class OrderReviewView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class PaymentView(LoginRequiredMixin, FormView):
-    form_class = PayPalPaymentsForm
-    template_name = 'web/payment.html'
+# class PaymentView(LoginRequiredMixin, FormView):
+#     form_class = PayPalPaymentsForm
+#     template_name = 'web/payment.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(PaymentView, self).get_context_data(**kwargs)
-        context["page_header"] = "Payment"
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super(PaymentView, self).get_context_data(**kwargs)
+#         context["page_header"] = "Payment"
+#         return context
 
-    def get_initial(self):
-        initial = super(PaymentView, self).get_initial()
-        initial.update({
-            "business": "receiver_email@example.com",
-            "amount": "0.99",
-            "item_name": "name of the item",
-            "invoice": "unique-invoice-id",
-            "notify_url": "https://www.example.com" + reverse('paypal-ipn'),
-            "return_url": "https://www.example.com/your-return-location/",
-            "cancel_return": "https://www.example.com/your-cancel-location/",
-        })
-        return initial
+#     def get_initial(self):
+#         initial = super(PaymentView, self).get_initial()
+#         initial.update({
+#             "business": "receiver_email@example.com",
+#             "amount": "0.99",
+#             "item_name": "name of the item",
+#             "invoice": "unique-invoice-id",
+#             "notify_url": "https://www.example.com" + reverse('paypal-ipn'),
+#             "return_url": "https://www.example.com/your-return-location/",
+#             "cancel_return": "https://www.example.com/your-cancel-location/",
+#         })
+#         return initial

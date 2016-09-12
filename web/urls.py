@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from web.views import (LoginView, LogoutView, HomeView, ContactView,
     RegisterParentView, RegisterSuccessView, RegistrationView,
-    PaymentView, ProductView)
+    ProductView)
 from web import api
 
 
@@ -28,5 +28,5 @@ urlpatterns = [
     url(r'^api/products/(?P<product_id>\w+)$', api.get_products, name='api-product'),
     url(r'^api/products$', api.get_products, name='api-products'),
 
-    url(r'^payment$', PaymentView.as_view(), name='payment')
+    #url(r'^payment$', PaymentView.as_view(), name='payment')
 ]
