@@ -171,15 +171,22 @@ class LogoutView(RedirectView):
 ##################################################################################################
 
 
-class OrderView(LoginRequiredMixin, TemplateView):
-    template_name = 'web/order.html'
+class ProductView(LoginRequiredMixin, TemplateView):
+    template_name = 'web/products.html'
 
     def get_context_data(self, **kwargs):
-        context = super(OrderView, self).get_context_data(**kwargs)
-        context["page_header"] = "Order"
-        products = get_all_products2()
-        print(products)
-        context["products"] = products
+        context = super(ProductView, self).get_context_data(**kwargs)
+        context["page_header"] = "Available Items"
+        context["product_list"] = get_all_products2()
+        return context
+
+
+class OrderReviewView(LoginRequiredMixin, TemplateView):
+    template_name = 'web/order-review.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(OrderReviewView, self).get_context_data(**kwargs)
+        context["page_header"] = "Order Review"
         return context
 
 

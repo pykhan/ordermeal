@@ -31,7 +31,7 @@ API_CODES = {
     },
     'S-101': {
         'code': 'S-101',
-        'message': 'Cart has been updated successfully.'
+        'message': 'Item added in cart.'
     },
     'S-102': {
         'code': 'S-102',
@@ -113,9 +113,9 @@ def get_categories(request, category_id=None):
 
 
 @login_required
-def update_cart(request, product_id, quantity):
+def add_to_cart(request, product_id):
     api_resp = {}
-    cart = request.session.get("cart", {})
+    cart = request.session.get("cart", [])
 
     try:
         product = Product.objects.get(id=product_id)
@@ -123,21 +123,26 @@ def update_cart(request, product_id, quantity):
         api_resp.update(status='failure', payloads=[API_CODES.get('E-103')])
         print("Error: update_cart: %s" % e)
     else:
-        if product_id not in cart:
-            cart[product_id] = {
-                'name': product.name,
-                'quantity': str(quantity),
-                'total': str(product.unit_price * int(quantity))
-            }
-            request.session["cart"] = cart
+        if len(cart) > 0:
+            for item in cart:
+                if product.id == item["id"]:
+                    item["quantity"] = item["quantity"] + 1
+                    item["total"] = item["total"] + float(product.unit_price)
+                else:
+                    cart.append({
+                        'id': product.id,
+                        'name': product.name,
+                        'quantity': 1,
+                        'total': float(product.unit_price)
+                    },)
         else:
-            item = cart.get(product_id)
-            if int(quantity) > 0:
-                item.update(name=product.name, quantity=str(quantity), total=str(product.unit_price * int(quantity)))
-                cart[product_id] = item
-                request.session["cart"] = cart
-            else:
-                cart.pop(product_id)
+            cart.append({
+                'id': product.id,
+                'name': product.name,
+                'quantity': 1,
+                'total': float(product.unit_price)
+            },)
+        request.session["cart"] = cart
         api_resp.update(status='success', payloads=[API_CODES.get('S-101')])
     return JsonResponse(api_resp)
 
@@ -145,27 +150,24 @@ def update_cart(request, product_id, quantity):
 @login_required
 def remove_from_cart(request, product_id):
     api_resp = {}
-    cart = request.session.get("cart", None)
+    cart = request.session.get("cart", [])
     print(cart)
 
-    if not cart:
-        api_resp.update(status='failure', payloads=[API_CODES.get('E-104')])
-
-    if product_id in cart:
-        cart.pop(product_id)
+    if cart:
+        cart = [item for item in cart if item["id"] != int(product_id)]
+        print(cart)
         request.session["cart"] = cart
         api_resp.update(status='success', payloads=[API_CODES.get('S-102')])
     else:
-        api_resp.update(status='failure', payloads=[API_CODES.get('E-105')])
-
+        api_resp.update(status='failure', payloads=[API_CODES.get('E-104')])
     return JsonResponse(api_resp)
 
 
 @login_required
 def get_cart(request):
     api_resp = {}
-    cart = request.session.get("cart", None)
-    api_resp.update(status='success', payloads=[cart])
+    cart = request.session.get("cart", [])
+    api_resp.update(status='success', payloads=cart)
     return JsonResponse(api_resp)
 
 

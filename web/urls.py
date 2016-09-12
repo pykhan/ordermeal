@@ -1,8 +1,8 @@
 from django.conf.urls import url
 
 from web.views import (LoginView, LogoutView, HomeView, ContactView,
-    RegisterParentView, OrderView, RegisterSuccessView, RegistrationView,
-    PaymentView)
+    RegisterParentView, RegisterSuccessView, RegistrationView,
+    PaymentView, ProductView)
 from web import api
 
 
@@ -18,9 +18,10 @@ urlpatterns = [
     url(r'^logout$', LogoutView.as_view(), name='logout'),
 
     ## login required
-    url(r'^order$', OrderView.as_view(), name='shop'),
+    url(r'^products$', ProductView.as_view(), name='products'),
+
     url(r'^api/get-cart$', api.get_cart, name='api-cart'),
-    url(r'^api/update-cart/(?P<product_id>(\w+))/(?P<quantity>(\d{1,2}))$', api.update_cart, name='api-update-cart'),
+    url(r'^api/add-to-cart/(?P<product_id>(\w+))$', api.add_to_cart, name='api-add-to-cart'),
     url(r'^api/remove-from-cart/(?P<product_id>(\w+))$', api.remove_from_cart, name='api-remove-from-cart'),
     url(r'^api/categories/(?P<category_id>\w+)$', api.get_categories, name='api-category'),
     url(r'^api/categories$', api.get_categories, name='api-categories'),
