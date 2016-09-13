@@ -4,14 +4,28 @@
     <div class="row">
     {% if products %}
         <div class="lead">Review your items</div>
-        {% for product in products %}
-            <div class="col-md-4">{{product.name}}</div>
-            <div class="col-md-4">{{product.quantity}}</div>
-            <div class="col-md-4">{{product.total}}</div>
-            <div class="col-md-4">
-                <a class="btn btn-info" href="#" role="button">Remove</a>
-            </div>
-        {% endfor %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                {% for product in products %}
+                <tbody>
+                    <tr>
+                        <td>{{product.name}}</td>
+                        <td>{{product.quantity}}</td>
+                        <td>{{product.total}}</td>
+                        <td><a class="btn btn-info" href="#" role="button">Remove</a></td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
     {% else %}
         <div class="lead">Your cart is empty.</div>
         <p>Go to <a href="{% url 'ol:products' %}">order</a> page to order your items.</p>
