@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from web.views import (LoginView, LogoutView, HomeView, ContactView,
     RegisterParentView, RegisterSuccessView, RegistrationView,
-    ProductView)
+    ProductView, OrderReviewView)
 from web import api
 
 
@@ -19,6 +19,7 @@ urlpatterns = [
 
     ## login required
     url(r'^products$', ProductView.as_view(), name='products'),
+    url(r'^order-review$', OrderReviewView.as_view(), name='order-review'),
 
     url(r'^api/get-cart$', api.get_cart, name='api-cart'),
     url(r'^api/add-to-cart/(?P<product_id>(\w+))$', api.add_to_cart, name='api-add-to-cart'),
