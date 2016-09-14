@@ -113,9 +113,9 @@ def get_categories(request, category_id=None):
 
 
 @login_required
-def add_to_cart(request, product_id):
+def add_to_cart(request, product_id, for_date):
     api_resp = {}
-    cart = request.session.get("cart", [])
+    cart = request.session.pop("cart", [])
 
     try:
         product = Product.objects.get(id=product_id)
@@ -125,7 +125,7 @@ def add_to_cart(request, product_id):
     else:
         if len(cart) > 0:
             for item in cart:
-                if product.id == item["id"]:
+                if product.id == item["id"] and for_date == item["date"]:
                     item["quantity"] = item["quantity"] + 1
                     item["total"] = item["total"] + float(product.unit_price)
                 else:
@@ -133,14 +133,16 @@ def add_to_cart(request, product_id):
                         'id': product.id,
                         'name': product.name,
                         'quantity': 1,
-                        'total': float(product.unit_price)
+                        'total': float(product.unit_price),
+                        'date': for_date
                     },)
         else:
             cart.append({
                 'id': product.id,
                 'name': product.name,
                 'quantity': 1,
-                'total': float(product.unit_price)
+                'total': float(product.unit_price),
+                'date': for_date
             },)
         request.session["cart"] = cart
         api_resp.update(status='success', payloads=[API_CODES.get('S-101')])
@@ -148,14 +150,12 @@ def add_to_cart(request, product_id):
 
 
 @login_required
-def remove_from_cart(request, product_id):
+def remove_from_cart(request, product_id, for_date):
     api_resp = {}
     cart = request.session.get("cart", [])
-    print(cart)
 
     if cart:
-        cart = [item for item in cart if item["id"] != int(product_id)]
-        print(cart)
+        cart = [item for item in cart if item["id"] != int(product_id) and item["date"] != for_date]
         request.session["cart"] = cart
         api_resp.update(status='success', payloads=[API_CODES.get('S-102')])
     else:

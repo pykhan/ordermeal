@@ -2,21 +2,28 @@
 
 {% block page_body %}
 <div class="row">
-    <div class="hidden-xs col-sm-6 col-md-6 col-lg-6">&nbsp;</div>
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-        <div class="form-inline pull-right">
+        <p class="lead">Instructions:</p>
+        <p>
+            Please make sure to select the desired date, before adding any items to your cart.
+            Your orders will be always added for the date showing.
+        </p>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <div class="pull-right">
             <div class="form-group">
-                Order Date: <input type="text" name="itemDate" value="" class="form-control" />
+                Order Date: <input type="text" id="itemDate" value="" class="form-control" />
             </div>
         </div>
     </div>
-    <div>&nbsp;</div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">&nbsp;</div>
     {% for p in product_list %}
         <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
             <div class="product text-center">
                 <div class="text-primary">{{p.name}}</div>
                 <div class="product-price">$ {{p.unit_price}}</div>
-                <a class="btn btn-info" href="javascript:addToCart({{p.id}})" role="button">Add</a>
+                <a class="btn btn-info" id="btn_{{p.id}}"
+                    href="javascript:addToCart({{p.id}}, 'btn_{{p.id}}')" role="button">Add</a>
             </div>
         </div>
     {% endfor %}
@@ -25,34 +32,4 @@
         <a class="btn btn-info" href="{% url 'ol:order-review' %}" role="button">Review Order</a>
     </div>
 </div>
-{% endblock %}
-
-{% block javascript %}
-{{ block.super }}
-
-/* http://www.daterangepicker.com/ */
-$('input[name="itemDate"]').daterangepicker({
-    "singleDatePicker": true,
-    "showDropdowns": true,
-    "dateLimit": {
-        "days": 7
-    },
-    "minDate": "09/15/2016",
-    "maxDate": "09/30/2016"
-});
-
-var addToCart = function(productId){
-    $.ajax({
-        url: "/web/api/add-to-cart/" + productId,
-        method: "GET"
-    }).done(function(response){
-        response.payloads.forEach(function(data){
-            $.notify(data.message, "success");
-        });
-    }).error(function(response){
-        response.payloads.forEach(function(data){
-            $.notify(data.message, "error");
-        });
-    });
-};
 {% endblock %}

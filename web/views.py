@@ -188,6 +188,7 @@ class OrderReviewView(LoginRequiredMixin, TemplateView):
         context = super(OrderReviewView, self).get_context_data(**kwargs)
         context["page_header"] = "Order Review"
         context["products"] = self.request.session.get("cart", None)
+        context["min_date"] = None
         return context
 
 
