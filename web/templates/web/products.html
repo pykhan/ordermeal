@@ -2,6 +2,15 @@
 
 {% block page_body %}
 <div class="row">
+    <div class="hidden-xs col-sm-6 col-md-6 col-lg-6">&nbsp;</div>
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <div class="form-inline pull-right">
+            <div class="form-group">
+                Order Date: <input type="text" name="itemDate" value="" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div>&nbsp;</div>
     {% for p in product_list %}
         <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
             <div class="product text-center">
@@ -20,6 +29,17 @@
 
 {% block javascript %}
 {{ block.super }}
+
+/* http://www.daterangepicker.com/ */
+$('input[name="itemDate"]').daterangepicker({
+    "singleDatePicker": true,
+    "showDropdowns": true,
+    "dateLimit": {
+        "days": 7
+    },
+    "minDate": "09/15/2016",
+    "maxDate": "09/30/2016"
+});
 
 var addToCart = function(productId){
     $.ajax({
