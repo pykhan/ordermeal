@@ -21,13 +21,13 @@ urlpatterns = [
     url(r'^products$', ProductView.as_view(), name='products'),
     url(r'^order-review$', OrderReviewView.as_view(), name='order-review'),
 
-    url(r'^api/get-cart$', api.get_cart, name='api-cart'),
-    url(r'^api/add-to-cart/(?P<product_id>(\w+))/(?P<for_date>(\d{4}-\d{1,2}-\d{1,2}))$', api.add_to_cart, name='api-add-to-cart'),
-    url(r'^api/remove-from-cart/(?P<product_id>(\w+))/(?P<for_date>[\d-]+)$', api.remove_from_cart, name='api-remove-from-cart'),
-    url(r'^api/categories/(?P<category_id>\w+)$', api.get_categories, name='api-category'),
-    url(r'^api/categories$', api.get_categories, name='api-categories'),
-    url(r'^api/products/(?P<product_id>\w+)$', api.get_products, name='api-product'),
-    url(r'^api/products$', api.get_products, name='api-products'),
+    url(r'^get-cart$', api.get_cart, name='api-cart'),
+    url(r'^add-to-cart/(?P<product_id>(\w+))/(?P<for_date>(\d{4}-\d{1,2}-\d{1,2}))$', api.add_to_cart, name='api-add-to-cart'),
+    url(r'^remove-from-cart/(?P<product_id>(\w+))/(?P<for_date>[\d-]+)$', api.remove_from_cart, name='api-remove-from-cart'),
+    url(r'^categories/(?P<category_id>\w+)$', api.get_categories, name='api-category'),
+    url(r'^categories$', api.get_categories, name='api-categories'),
+    url(r'^products/(?P<product_id>\w+)$', api.get_products, name='api-product'),
+    url(r'^products$', api.get_products, name='api-products'),
 
     #url(r'^payment$', PaymentView.as_view(), name='payment')
 ]
