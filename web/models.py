@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from localflavor.us.models import PhoneNumberField
 from localflavor.us.us_states import STATE_CHOICES
-    
+
 
 class ModelSaveMixin(object):
     created_at = models.DateField(verbose_name=_('Created At'), editable=False)
@@ -99,3 +99,31 @@ class Product(ModelSaveMixin, models.Model):
     class Meta:
         verbose_name = _("Product")
         verbose_name_plural = _("Products")
+
+
+class OrderConfirmationId(ModelSaveMixin, models.Model):
+    order_cfm = models.PositiveIntegerField(verbose_name=_('Order Confirmation'), primary_key=True)
+    other_order_cfm = models.CharField(max_length=50, verbose_name=_('Other Order Confirmation'))
+
+    def __str__(self):
+        return order_cfm
+
+    class Meta:
+        verbose_name = _("OrderConfirmationId")
+        verbose_name_plural = _("OrderConfirmationIds")
+
+
+class Order(ModelSaveMixin, models.Model):
+    order_cfm = models.PositiveIntegerField(verbose_name=_('Order Confirmation'), blank=True, null=True)
+    for_date = models.DateField(verbose_name=_('Order For Date'))
+    product = models.ForeignKey(to=Product, verbose_name=_('Product'))
+    total_price = models.DecimalField(max_digits=7, decimal_places=2)
+    has_paid = models.BooleanField(verbose_name=_('Paid ?'), default=False)
+
+    def __str__(self):
+        return '%s (@ %s)' % (self.name, self.total_price)
+
+    class Meta:
+        verbose_name = _("Order")
+        verbose_name_plural = _("Orders")
+        ordering = ['-created_at']
