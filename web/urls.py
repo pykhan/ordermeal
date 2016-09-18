@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from web.views import (LoginView, LogoutView, HomeView, ContactView,
     RegisterParentView, RegisterSuccessView, RegistrationView,
-    ProductView, OrderReviewView, RemoveFromCartView, PaymentView)
+    OrderView, OrderReviewView, RemoveFromCartView, PaymentView)
 from web import api
 
 
@@ -18,7 +18,7 @@ urlpatterns = [
     url(r'^logout$', LogoutView.as_view(), name='logout'),
 
     ## login required - class views
-    url(r'^order$', ProductView.as_view(), name='order'),
+    url(r'^order$', OrderView.as_view(), name='order'),
     url(r'^order-review$', OrderReviewView.as_view(), name='order-review'),
     url(r'^remove-from-cart/(?P<child_id>(\d+))/(?P<product_id>(\d+))/(?P<for_date>(\d{4}-\d{1,2}-\d{1,2}))$',
         RemoveFromCartView.as_view(), name='remove-from-cart'),
@@ -31,6 +31,4 @@ urlpatterns = [
     url(r'^categories$', api.get_categories, name='api-categories'),
     url(r'^products/(?P<product_id>\d+)$', api.get_products, name='api-product'),
     url(r'^products$', api.get_products, name='api-products'),
-
-    #url(r'^payment$', PaymentView.as_view(), name='payment')
 ]

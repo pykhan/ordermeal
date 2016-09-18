@@ -174,6 +174,3 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Session Cookie Age - set to 24 hours for this project
 # https://docs.djangoproject.com/en/1.10/ref/settings/#session-cookie-age
 SESSION_COOKIE_AGE = 86400
-
-# PayPal
-# PAYPAL_TEST = True

@@ -90,3 +90,6 @@ ENV/
 
 # Sqlite3 DB
 *.sqlite3
+
+# Config files
+*.config

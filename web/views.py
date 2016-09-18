@@ -173,11 +173,11 @@ class LogoutView(RedirectView):
 ##################################################################################################
 
 
-class ProductView(LoginRequiredMixin, TemplateView):
-    template_name = 'web/products.html'
+class OrderView(LoginRequiredMixin, TemplateView):
+    template_name = 'web/order.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ProductView, self).get_context_data(**kwargs)
+        context = super(OrderView, self).get_context_data(**kwargs)
         context["page_header"] = "Available Items"
         context["product_list"] = get_all_products()
         context["child_list"] = get_all_children(self.request.user)
@@ -223,10 +223,9 @@ class PaymentView(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         self.cart = request.session.get("cart", [])
         self.order_total = get_cart_total(request)
-        # print("order total: %s" % self.order_total)
-        # cfm_id_obj = OrderConfirmationId(total_price=self.order_total)
-        # cfm_id_obj.save()
-        # request.session["order_confirmation_no"] = cfm_id_obj.order_cfm
+        cfm_id_obj = OrderConfirmationId(total_price=self.order_total)
+        cfm_id_obj.save()
+        request.session["order_confirmation_no"] = cfm_id_obj.order_cfm
         # print("order cfm: %s" % cfm_id_obj.order_cfm)
         # for item in self.cart:
         #     order = Order(parent=request.user,
@@ -246,26 +245,3 @@ class PaymentView(LoginRequiredMixin, TemplateView):
         context["page_header"] = "Payment"
         context["order_total"] = self.order_total
         return context
-
-
-# class PaymentView(LoginRequiredMixin, FormView):
-#     form_class = PayPalPaymentsForm
-#     template_name = 'web/payment.html'
-
-#     def get_context_data(self, **kwargs):
-#         context = super(PaymentView, self).get_context_data(**kwargs)
-#         context["page_header"] = "Payment"
-#         return context
-
-#     def get_initial(self):
-#         initial = super(PaymentView, self).get_initial()
-#         initial.update({
-#             "business": "receiver_email@example.com",
-#             "amount": "0.99",
-#             "item_name": "name of the item",
-#             "invoice": "unique-invoice-id",
-#             "notify_url": "https://www.example.com" + reverse('paypal-ipn'),
-#             "return_url": "https://www.example.com/your-return-location/",
-#             "cancel_return": "https://www.example.com/your-cancel-location/",
-#         })
-#         return initial
