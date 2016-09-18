@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from web.models import (Category, Product, Doctor, Child, ParentProfile)
+from web.models import (Category, Product, Doctor, Child, ParentProfile,
+                        OrderConfirmationId, Order)
 
 
 @admin.register(Category)
@@ -10,7 +11,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'middle_name', 'last_name', 'work_phone', 'cell_phone', 
+    list_display = ('first_name', 'middle_name', 'last_name', 'work_phone', 'cell_phone',
         'address_1', 'address_2', 'city', 'state', 'zip_code', 'child', )
     empty_value_display = '-empty-'
 
@@ -31,3 +32,8 @@ class ParentProfileAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'unit_price', 'description', 'category', 'expires_at')
     ordering = ('expires_at', 'category', 'name')
+
+
+@admin.register(OrderConfirmationId)
+class OrderConfirmationIdAdmin(admin.ModelAdmin):
+    ordering = ('-order_cfm', )

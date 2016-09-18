@@ -102,8 +102,16 @@ class Product(ModelSaveMixin, models.Model):
 
 
 class OrderConfirmationId(ModelSaveMixin, models.Model):
-    order_cfm = models.PositiveIntegerField(verbose_name=_('Order Confirmation'), primary_key=True)
-    other_order_cfm = models.CharField(max_length=50, verbose_name=_('Other Order Confirmation'))
+    order_cfm = models.PositiveIntegerField(verbose_name=_('Order Confirmation'))
+    other_order_cfm = models.CharField(max_length=50, verbose_name=_('Other Order Confirmation'), blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        cfm = OrderConfirmationId.objects.order_by('-order_cfm')
+        if cfm is not None:
+            self.order_cfm = cfm[0] + 1
+        else:
+            self.order_cfm = 1001   ## first order confirmation number
+        return super(OrderConfirmationId, self).save(*args, **kwargs)
 
     def __str__(self):
         return order_cfm
@@ -126,4 +134,4 @@ class Order(ModelSaveMixin, models.Model):
     class Meta:
         verbose_name = _("Order")
         verbose_name_plural = _("Orders")
-        ordering = ['-created_at']
+        ordering = ['-id', ]
