@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from web.views import (LoginView, LogoutView, HomeView, ContactView,
     RegisterParentView, RegisterSuccessView, RegistrationView,
-    ProductView, OrderReviewView)
+    ProductView, OrderReviewView, RemoveFromCartView)
 from web import api
 
 
@@ -17,13 +17,15 @@ urlpatterns = [
     url(r'^login$', LoginView.as_view(), name='login'),
     url(r'^logout$', LogoutView.as_view(), name='logout'),
 
-    ## login required
-    url(r'^products$', ProductView.as_view(), name='products'),
+    ## login required - class views
+    url(r'^order$', ProductView.as_view(), name='order'),
     url(r'^order-review$', OrderReviewView.as_view(), name='order-review'),
+    url(r'^remove-from-cart/(?P<product_id>(\w+))/(?P<for_date>(\d{4}-\d{1,2}-\d{1,2}))$',
+        RemoveFromCartView.as_view(), name='remove-from-cart'),
 
+    ## login required - api calls
     url(r'^get-cart$', api.get_cart, name='api-cart'),
     url(r'^add-to-cart/(?P<product_id>(\w+))/(?P<for_date>(\d{4}-\d{1,2}-\d{1,2}))$', api.add_to_cart, name='api-add-to-cart'),
-    url(r'^remove-from-cart/(?P<product_id>(\w+))/(?P<for_date>[\d-]+)$', api.remove_from_cart, name='api-remove-from-cart'),
     url(r'^categories/(?P<category_id>\w+)$', api.get_categories, name='api-category'),
     url(r'^categories$', api.get_categories, name='api-categories'),
     url(r'^products/(?P<product_id>\w+)$', api.get_products, name='api-product'),

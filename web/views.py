@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 #from paypal.standard.forms import PayPalPaymentsForm
 
-from web.api import get_all_products2
+from web.api import get_all_products
 from web.forms import (DoctorForm, ChildForm,
                         UserForm, ParentProfileForm, LoginForm)
 from web.models import Product
@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 class LoginRequiredMixin(object):
 
-    @method_decorator(login_required(login_url='/web/login/'))
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
@@ -177,19 +177,44 @@ class ProductView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ProductView, self).get_context_data(**kwargs)
         context["page_header"] = "Available Items"
-        context["product_list"] = get_all_products2()
+        context["product_list"] = get_all_products()
         return context
 
 
 class OrderReviewView(LoginRequiredMixin, TemplateView):
     template_name = 'web/order-review.html'
+    cart_total = 0.00
 
     def get_context_data(self, **kwargs):
         context = super(OrderReviewView, self).get_context_data(**kwargs)
         context["page_header"] = "Order Review"
         context["products"] = self.request.session.get("cart", None)
         context["min_date"] = None
+        context["cart_total"] = self.cart_total
         return context
+
+    def get(self, request, *args, **kwargs):
+        cart = request.session.get("cart", None)
+        if cart:
+            for item in cart:
+                self.cart_total = self.cart_total + item["total"]
+        return super(OrderReviewView, self).get(request, *args, **kwargs)
+
+
+class RemoveFromCartView(LoginRequiredMixin, RedirectView):
+    url = reverse_lazy('ol:order-review')
+
+    def dispatch(self, request, *args, **kwargs):
+        cart = request.session.get("cart", [])
+        if cart:
+            product_id = kwargs.get("product_id")
+            for_date = kwargs.get("for_date")
+            for item in cart:
+                if item["id"] == int(product_id) and item["for_date"] == for_date:
+                    cart.remove(item)
+                    break
+            request.session["cart"] = cart
+        return super(RemoveFromCartView, self).dispatch(request, *args, **kwargs)
 
 
 # class PaymentView(LoginRequiredMixin, FormView):

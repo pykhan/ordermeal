@@ -1,4 +1,5 @@
 {% extends 'web/base.html' %}
+{% load humanize %}
 
 {% block page_body %}
     <div class="row">
@@ -8,27 +9,40 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>For Date</th>
                         <th>Name</th>
                         <th>Quantity</th>
                         <th>Total</th>
                         <th>&nbsp;</th>
                     </tr>
                 </thead>
-                {% for product in products %}
                 <tbody>
+                {% for product in products %}
                     <tr>
+                        <td>{{product.for_date}}</td>
                         <td>{{product.name}}</td>
                         <td>{{product.quantity}}</td>
-                        <td>{{product.total}}</td>
-                        <td><a class="btn btn-info" href="#" role="button">Remove</a></td>
+                        <td>$ {{product.total|floatformat:"2"|intcomma}}</td>
+                        <td><a class="btn btn-info"
+                            href="{% url 'ol:remove-from-cart' product_id=product.id for_date=product.for_date %}"
+                            role="button">Remove</a></td>
+                    </tr>
+                {% endfor %}
+                    <tr>
+                        <td colspan="5">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">&nbsp;</td>
+                        <td>Total:</td>
+                        <td>$ {{cart_total|floatformat:"2"|intcomma}}</td>
+                        <td>&nbsp;</td>
                     </tr>
                 </tbody>
-                {% endfor %}
             </table>
         </div>
     {% else %}
         <div class="lead">Your cart is empty.</div>
-        <p>Go to <a href="{% url 'ol:products' %}">order</a> page to order your items.</p>
+        <p>Go to <a href="{% url 'ol:order' %}">order</a> page to order your items.</p>
     {% endif %}
     </div>
 {% endblock %}

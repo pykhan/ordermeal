@@ -42,24 +42,6 @@ API_CODES = {
 
 def get_all_products(product_id=None):
     if product_id:
-        products = Product.objects.filter(id=product_id, is_active=True, expires_at__gte=date.today())
-    else:
-        products = Product.objects.filter(is_active=True, expires_at__gte=date.today())
-    products_json = []
-    for product in products:
-        products_json.append({
-            product.id: {
-                    'name': product.name,
-                    'unit_price': product.unit_price,
-                    'description': product.description,
-                    'category_id': product.category.id
-                }
-        })
-    return products_json
-
-
-def get_all_products2(product_id=None):
-    if product_id:
         products = Product.objects.filter(id=product_id, expires_at__gte=date.today()).exclude(is_active=False)
     else:
         products = Product.objects.filter(is_active=True, expires_at__gte=date.today())
@@ -71,7 +53,7 @@ def get_all_products2(product_id=None):
             'unit_price': product.unit_price,
             'description': product.description,
             'category_id': product.category.id
-        })
+        },)
     return products_json
 
 
@@ -123,26 +105,29 @@ def add_to_cart(request, product_id, for_date):
         api_resp.update(status='failure', payloads=[API_CODES.get('E-103')])
         print("Error: update_cart: %s" % e)
     else:
+        is_match = False
         if len(cart) > 0:
             for item in cart:
-                if product.id == item["id"] and for_date == item["date"]:
+                if product.id == item["id"] and for_date == item["for_date"]:
                     item["quantity"] = item["quantity"] + 1
                     item["total"] = item["total"] + float(product.unit_price)
-                else:
-                    cart.append({
-                        'id': product.id,
-                        'name': product.name,
-                        'quantity': 1,
-                        'total': float(product.unit_price),
-                        'date': for_date
-                    },)
+                    is_match = True
+
+            if not is_match:
+                cart.append({
+                    'id': product.id,
+                    'name': product.name,
+                    'quantity': 1,
+                    'total': float(product.unit_price),
+                    'for_date': for_date
+                },)
         else:
             cart.append({
                 'id': product.id,
                 'name': product.name,
                 'quantity': 1,
                 'total': float(product.unit_price),
-                'date': for_date
+                'for_date': for_date
             },)
         request.session["cart"] = cart
         api_resp.update(status='success', payloads=[API_CODES.get('S-101')])
@@ -155,7 +140,7 @@ def remove_from_cart(request, product_id, for_date):
     cart = request.session.get("cart", [])
 
     if cart:
-        cart = [item for item in cart if item["id"] != int(product_id) and item["date"] != for_date]
+        cart = [item for item in cart if item["id"] != int(product_id) and item["for_date"] != for_date]
         request.session["cart"] = cart
         api_resp.update(status='success', payloads=[API_CODES.get('S-102')])
     else:
