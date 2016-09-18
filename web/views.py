@@ -1,4 +1,6 @@
 import logging
+from datetime import datetime
+from decimal import Decimal
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -9,10 +11,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 #from paypal.standard.forms import PayPalPaymentsForm
 
-from web.api import (get_all_products, get_all_children)
+from web.api import (get_all_products, get_all_children, get_cart_total)
 from web.forms import (DoctorForm, ChildForm,
                         UserForm, ParentProfileForm, LoginForm)
-from web.models import Product
+from web.models import (Product, OrderConfirmationId, Order, Child)
 
 
 log = logging.getLogger(__name__)
@@ -195,10 +197,7 @@ class OrderReviewView(LoginRequiredMixin, TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
-        cart = request.session.get("cart", None)
-        if cart:
-            for item in cart:
-                self.cart_total = self.cart_total + item["total"]
+        self.cart_total = get_cart_total(request)
         return super(OrderReviewView, self).get(request, *args, **kwargs)
 
 
@@ -216,6 +215,37 @@ class RemoveFromCartView(LoginRequiredMixin, RedirectView):
                     break
             request.session["cart"] = cart
         return super(RemoveFromCartView, self).dispatch(request, *args, **kwargs)
+
+
+class PaymentView(LoginRequiredMixin, TemplateView):
+    template_name = 'web/payment.html'
+
+    def get(self, request, *args, **kwargs):
+        self.cart = request.session.get("cart", [])
+        self.order_total = get_cart_total(request)
+        # print("order total: %s" % self.order_total)
+        # cfm_id_obj = OrderConfirmationId(total_price=self.order_total)
+        # cfm_id_obj.save()
+        # request.session["order_confirmation_no"] = cfm_id_obj.order_cfm
+        # print("order cfm: %s" % cfm_id_obj.order_cfm)
+        # for item in self.cart:
+        #     order = Order(parent=request.user,
+        #         child=Child.objects.get(id=item["child_id"]),
+        #         product=Product.objects.get(id=item["id"]),
+        #         quantity=item["quantity"],
+        #         price=Decimal.from_float(item["price"]),
+        #         for_date=datetime.strptime(item["for_date"], '%Y-%m-%d').date(),
+        #         order_cfm=cfm_id_obj
+        #     )
+        #     order.save()
+        #     print("item saved. id: %s" % order.pk)
+        return super(PaymentView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(PaymentView, self).get_context_data(**kwargs)
+        context["page_header"] = "Payment"
+        context["order_total"] = self.order_total
+        return context
 
 
 # class PaymentView(LoginRequiredMixin, FormView):

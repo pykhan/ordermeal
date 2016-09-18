@@ -24,7 +24,7 @@
                         <td>{{item.for_date}}</td>
                         <td>{{item.name}}</td>
                         <td>{{item.quantity}}</td>
-                        <td>$ {{item.total|floatformat:"2"|intcomma}}</td>
+                        <td>$ {{item.price|floatformat:"2"|intcomma}}</td>
                         <td><a class="btn btn-info"
                             href="{% url 'ol:remove-from-cart' child_id=item.child_id product_id=item.id for_date=item.for_date %}"
                             role="button">Remove</a></td>
@@ -41,6 +41,17 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">&nbsp;</div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="text-center">
+                <a href="{% url 'ol:order' %}" class="btn btn-info" role="button">Add Item</a>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="text-center">
+                <a href="{% url 'ol:payment' %}" class="btn btn-success" role="button">Payment</a>
+            </div>
         </div>
     {% else %}
         <div class="lead">Your cart is empty.</div>

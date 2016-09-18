@@ -1,5 +1,26 @@
 {% extends 'web/base.html' %}
 
 {% block page_body %}
-
+<div class="row">
+    <div class="lead">Please select a payment method</div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <p>
+            If you are paying by check, please make sure to indicate
+            the check number that you are sending as payment.
+        </p>
+        <p>
+            If you are paying by PayPal, please note that there will
+            be a <span class="text-danger">5% service fee</span>
+            attached to your payment.
+        </p>
+    </div>
+    <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
+        Order Total:
+    </div>
+    <div class="col-xs-6 col-sm-9 col-md-9 col-lg-9">
+        {{ order_total }}
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">&nbsp;</div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">&nbsp;</div>
+</div>
 {% endblock %}

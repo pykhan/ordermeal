@@ -132,7 +132,7 @@ def add_to_cart(request, child_id, product_id, for_date):
             for item in cart:
                 if child.id == item["child_id"] and product.id == item["id"] and for_date == item["for_date"]:
                     item["quantity"] = item["quantity"] + 1
-                    item["total"] = item["total"] + float(product.unit_price)
+                    item["price"] = item["price"] + float(product.unit_price)
                     is_match = True
 
             if not is_match:
@@ -142,7 +142,7 @@ def add_to_cart(request, child_id, product_id, for_date):
                     'child_name': child.first_name,
                     'name': product.name,
                     'quantity': 1,
-                    'total': float(product.unit_price),
+                    'price': float(product.unit_price),
                     'for_date': for_date
                 },)
         else:
@@ -152,7 +152,7 @@ def add_to_cart(request, child_id, product_id, for_date):
                 'child_name': child.first_name,
                 'name': product.name,
                 'quantity': 1,
-                'total': float(product.unit_price),
+                'price': float(product.unit_price),
                 'for_date': for_date
             },)
         request.session["cart"] = cart
@@ -183,5 +183,9 @@ def get_cart(request):
 
 
 def get_cart_total(request):
-    ## calculate cart total and return it from here.
-    pass
+    cart_total = 0.00
+    cart = request.session.get("cart", None)
+    if cart:
+        for item in cart:
+            cart_total = cart_total + item["price"]
+    return cart_total
