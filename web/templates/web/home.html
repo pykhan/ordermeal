@@ -4,8 +4,15 @@
     <p class="lead">
         Order Lunch for your kids.
     </p>
-    <p>
-        You must <a href="{% url 'ol:login' %}">login</a> to use the site. If you are not registered yet, 
-        please click the register <a href="{% url 'ol:register' %}">link</a> at the top right corner.
-    </p>
+    {% if request.user.is_authenticated %}
+        <p>
+            Go to <a href="{% url 'ol:order' %}">Order</a> page to start your order.  Once
+            done, please review your order and then make payment.
+        </p>
+    {% else %}
+        <p>
+            You must <a href="{% url 'ol:login' %}">login</a> to use the site. If you are not registered yet,
+            please click the register <a href="{% url 'ol:register' %}">link</a> at the top right corner.
+        </p>
+    {% endif %}
 {% endblock %}
