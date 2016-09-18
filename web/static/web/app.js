@@ -13,7 +13,7 @@ $('input[id="itemDate"]').daterangepicker({
 
 var addToCart = function(productId, clickedButtonId){
     $.ajax({
-        url: "/add-to-cart/" + productId + "/" + $("#itemDate").val(),
+        url: "/add-to-cart/" + $("#child").val() + "/" + productId + "/" + $("#itemDate").val(),
         method: "GET"
     }).done(function(response){
         response.payloads.forEach(function(data){

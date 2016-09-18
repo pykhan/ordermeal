@@ -3,36 +3,38 @@
 
 {% block page_body %}
     <div class="row">
-    {% if products %}
-        <div class="lead">Review your items</div>
+    {% if cart %}
+        <div class="lead">Review your items for each child</div>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>Child</th>
                         <th>For Date</th>
                         <th>Name</th>
                         <th>Quantity</th>
                         <th>Total</th>
-                        <th>&nbsp;</th>
+                        <th>Remove</th>
                     </tr>
                 </thead>
                 <tbody>
-                {% for product in products %}
+                {% for item in cart %}
                     <tr>
-                        <td>{{product.for_date}}</td>
-                        <td>{{product.name}}</td>
-                        <td>{{product.quantity}}</td>
-                        <td>$ {{product.total|floatformat:"2"|intcomma}}</td>
+                        <td>{{item.child_name}}</td>
+                        <td>{{item.for_date}}</td>
+                        <td>{{item.name}}</td>
+                        <td>{{item.quantity}}</td>
+                        <td>$ {{item.total|floatformat:"2"|intcomma}}</td>
                         <td><a class="btn btn-info"
-                            href="{% url 'ol:remove-from-cart' product_id=product.id for_date=product.for_date %}"
+                            href="{% url 'ol:remove-from-cart' child_id=item.child_id product_id=item.id for_date=item.for_date %}"
                             role="button">Remove</a></td>
                     </tr>
                 {% endfor %}
                     <tr>
-                        <td colspan="5">&nbsp;</td>
+                        <td colspan="6">&nbsp;</td>
                     </tr>
                     <tr>
-                        <td colspan="2">&nbsp;</td>
+                        <td colspan="3">&nbsp;</td>
                         <td>Total:</td>
                         <td>$ {{cart_total|floatformat:"2"|intcomma}}</td>
                         <td>&nbsp;</td>

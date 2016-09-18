@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 #from paypal.standard.forms import PayPalPaymentsForm
 
-from web.api import get_all_products
+from web.api import (get_all_products, get_all_children)
 from web.forms import (DoctorForm, ChildForm,
                         UserForm, ParentProfileForm, LoginForm)
 from web.models import Product
@@ -178,6 +178,7 @@ class ProductView(LoginRequiredMixin, TemplateView):
         context = super(ProductView, self).get_context_data(**kwargs)
         context["page_header"] = "Available Items"
         context["product_list"] = get_all_products()
+        context["child_list"] = get_all_children(self.request.user)
         return context
 
 
@@ -188,7 +189,7 @@ class OrderReviewView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(OrderReviewView, self).get_context_data(**kwargs)
         context["page_header"] = "Order Review"
-        context["products"] = self.request.session.get("cart", None)
+        context["cart"] = self.request.session.get("cart", None)
         context["min_date"] = None
         context["cart_total"] = self.cart_total
         return context

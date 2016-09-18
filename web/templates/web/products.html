@@ -9,7 +9,16 @@
             Your orders will be always added for the date showing.
         </p>
     </div>
-    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="form-group">
+                Child: <select id="child" class="form-control">
+                    {% for child in child_list %}
+                        <option value="{{child.id}}">{{child.first_name}} {{child.last_name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
         <div class="pull-right">
             <div class="form-group">
                 Order Date: <input type="text" id="itemDate" value="" class="form-control" />

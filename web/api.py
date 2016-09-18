@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.http import JsonResponse
 
-from web.models import (Category, Product)
+from web.models import (Category, Product, Child)
 
 
 API_CODES = {
@@ -57,6 +57,26 @@ def get_all_products(product_id=None):
     return products_json
 
 
+def get_all_children(parent):
+    child_list = []
+    children = Child.objects.filter(parent=parent)
+    if children:
+        for child in children:
+            child_list.append({
+                'id': child.id,
+                'first_name': child.first_name,
+                'last_name': child.last_name
+            },)
+    else:
+        # the entire else block should be removed
+        child_list.append({
+            'id': 0,
+            'first_name': 'Anna',
+            'last_name': 'Hannan'
+        },)
+    return child_list
+
+
 @login_required
 def get_products(request, product_id=None):
     api_resp = {
@@ -95,12 +115,14 @@ def get_categories(request, category_id=None):
 
 
 @login_required
-def add_to_cart(request, product_id, for_date):
+def add_to_cart(request, child_id, product_id, for_date):
     api_resp = {}
     cart = request.session.pop("cart", [])
+    print(cart)
 
     try:
         product = Product.objects.get(id=product_id)
+        child = Child.objects.get(id=child_id)
     except Exception as e:
         api_resp.update(status='failure', payloads=[API_CODES.get('E-103')])
         print("Error: update_cart: %s" % e)
@@ -108,7 +130,7 @@ def add_to_cart(request, product_id, for_date):
         is_match = False
         if len(cart) > 0:
             for item in cart:
-                if product.id == item["id"] and for_date == item["for_date"]:
+                if child.id == item["child_id"] and product.id == item["id"] and for_date == item["for_date"]:
                     item["quantity"] = item["quantity"] + 1
                     item["total"] = item["total"] + float(product.unit_price)
                     is_match = True
@@ -116,6 +138,8 @@ def add_to_cart(request, product_id, for_date):
             if not is_match:
                 cart.append({
                     'id': product.id,
+                    'child_id': child.id,
+                    'child_name': child.first_name,
                     'name': product.name,
                     'quantity': 1,
                     'total': float(product.unit_price),
@@ -124,6 +148,8 @@ def add_to_cart(request, product_id, for_date):
         else:
             cart.append({
                 'id': product.id,
+                'child_id': child.id,
+                'child_name': child.first_name,
                 'name': product.name,
                 'quantity': 1,
                 'total': float(product.unit_price),
