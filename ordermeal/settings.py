@@ -25,7 +25,12 @@ SECRET_KEY = 'j8(pjsmp+t)iv2s)&d#_t!y#dnz-!bx!os!0sg4j9wnw#d!(x0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+if DEBUG:
+    ALLOWED_HOSTS = [
+        '.hatikvahlunch.com',
+    ]
+else:
+    ALLOWED_HOSTS = []
 
 
 # Application definition
