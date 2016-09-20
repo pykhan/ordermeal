@@ -1,11 +1,17 @@
-from datetime import date
+import logging
+#from datetime import date
+from datetime import datetime
+from decimal import Decimal
 
 from django.contrib import sessions
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.http import JsonResponse
 
-from web.models import (Category, Product, Child)
+from web.models import (Category, Product, Child, OrderConfirmationId, Order)
+
+
+log = logging.getLogger(__name__)
 
 
 API_CODES = {
@@ -29,6 +35,10 @@ API_CODES = {
         'code': 'E-105',
         'message': 'Item dos not exist in cart. Nothing to remove.'
     },
+    'E-106': {
+        'code': 'E-106',
+        'message': 'Your session may have expired. Please login again and order.'
+    },
     'S-101': {
         'code': 'S-101',
         'message': 'Item added in cart.'
@@ -37,14 +47,18 @@ API_CODES = {
         'code': 'S-102',
         'message': 'Item has been removed successfully.'
     },
+    'S-103': {
+        'code': 'S-103',
+        'message': 'Your order has been placed successfully.'
+    },
 }
 
 
 def get_all_products(product_id=None):
     if product_id:
-        products = Product.objects.filter(id=product_id, expires_at__gte=date.today()).exclude(is_active=False)
+        products = Product.objects.filter(id=product_id, expires_at__gte=datetime.date.today()).exclude(is_active=False)
     else:
-        products = Product.objects.filter(is_active=True, expires_at__gte=date.today())
+        products = Product.objects.filter(is_active=True, expires_at__gte=datetime.date.today())
     products_json = []
     for product in products:
         products_json.append({
@@ -75,6 +89,22 @@ def get_all_children(parent):
             'last_name': 'Hannan'
         },)
     return child_list
+
+
+def get_cart_total(request):
+    cart_total = 0.00
+    cart = request.session.get("cart", None)
+    if cart:
+        for item in cart:
+            cart_total = cart_total + item["price"]
+    return cart_total
+
+
+def session_cleanup(request):
+    request.session.pop("cart")
+    request.session.pop("order_total_with_membership_fee")
+    request.session.pop("order_total")
+    request.session.pop("is_membership_paid")
 
 
 @login_required
@@ -118,14 +148,13 @@ def get_categories(request, category_id=None):
 def add_to_cart(request, child_id, product_id, for_date):
     api_resp = {}
     cart = request.session.pop("cart", [])
-    print(cart)
 
     try:
         product = Product.objects.get(id=product_id)
         child = Child.objects.get(id=child_id)
     except Exception as e:
         api_resp.update(status='failure', payloads=[API_CODES.get('E-103')])
-        print("Error: update_cart: %s" % e)
+        log.error("Error: update_cart: %s" % e)
     else:
         is_match = False
         if len(cart) > 0:
@@ -182,10 +211,26 @@ def get_cart(request):
     return JsonResponse(api_resp)
 
 
-def get_cart_total(request):
-    cart_total = 0.00
+@login_required
+def confirm_payment(request, check_no):
+    api_resp = {}
+    total_charge = request.session.get("order_total_with_membership_fee", None)
     cart = request.session.get("cart", None)
-    if cart:
+    if all([total_charge, cart]):
+        other_order_cfm = (request.user.last_name + "-" + check_no).title()
+        cfm_id_obj = OrderConfirmationId(other_order_cfm=other_order_cfm, total_price=total_charge)
+        cfm_id_obj.save()
         for item in cart:
-            cart_total = cart_total + item["price"]
-    return cart_total
+            Order(parent=request.user,
+                child=Child.objects.get(id=item["child_id"]),
+                product=Product.objects.get(id=item["id"]),
+                quantity=item["quantity"],
+                price=Decimal.from_float(item["price"]),
+                for_date=datetime.strptime(item["for_date"], '%Y-%m-%d').date(),
+                order_cfm=cfm_id_obj
+            ).save()
+        api_resp.update(status='success', payloads=[API_CODES.get("S-103"), {'confirmation_no': cfm_id_obj.order_cfm}])
+        session_cleanup(request)
+    else:
+        api_resp.update(status='error', payloads=[API_CODES.get("E-106")])
+    return JsonResponse(api_resp)

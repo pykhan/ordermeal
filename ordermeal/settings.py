@@ -25,12 +25,7 @@ SECRET_KEY = 'j8(pjsmp+t)iv2s)&d#_t!y#dnz-!bx!os!0sg4j9wnw#d!(x0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-if DEBUG:
-    ALLOWED_HOSTS = [
-        '.hatikvahlunch.com',
-    ]
-else:
-    ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -178,4 +173,6 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Session Cookie Age - set to 24 hours for this project
 # https://docs.djangoproject.com/en/1.10/ref/settings/#session-cookie-age
-SESSION_COOKIE_AGE = 86400
+SESSION_COOKIE_AGE = 14400  # 4 hours
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"

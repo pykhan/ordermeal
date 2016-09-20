@@ -15,22 +15,22 @@ class LoginForm(AuthenticationForm):
 
 
 class DoctorForm(forms.ModelForm):
-    
+
     class Meta:
         model = Doctor
         exclude = ('child', )
 
 
 class ChildForm(forms.ModelForm):
-    
+
     def __init__(self, *args, **kwargs):
         super(ChildForm, self).__init__(*args, **kwargs)
         self.fields['birth_date'].widget = SelectDateWidget(years=range(
             date.today().year-15, date.today().year-2, 1),
-            attrs={'class':'form-control'}, 
+            attrs={'class':'form-control'},
             empty_label=('Year', 'Month', 'Date')
         )
-    
+
     class Meta:
         model = Child
         exclude = ('parent', )
@@ -49,7 +49,7 @@ class UserForm(forms.ModelForm):
 
 
 class ParentProfileForm(forms.ModelForm):
-    
+
     class Meta:
         model = ParentProfile
-        exclude = ('user', )
+        exclude = ('user', 'is_membership_paid', )

@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^payment$', PaymentView.as_view(), name='payment'),
 
     ## login required - api calls
+    url(r'^confirm-payment/(?P<check_no>\w+)$', api.confirm_payment, name='confirm-payment'),
     url(r'^get-cart$', api.get_cart, name='api-cart'),
     url(r'^add-to-cart/(?P<child_id>(\d+))/(?P<product_id>(\d+))/(?P<for_date>(\d{4}-\d{1,2}-\d{1,2}))$', api.add_to_cart, name='api-add-to-cart'),
     url(r'^categories/(?P<category_id>\d+)$', api.get_categories, name='api-category'),

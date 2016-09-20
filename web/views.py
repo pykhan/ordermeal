@@ -15,7 +15,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from web.api import (get_all_products, get_all_children, get_cart_total)
 from web.forms import (DoctorForm, ChildForm,
                         UserForm, ParentProfileForm, LoginForm)
-from web.models import (Product, OrderConfirmationId, Order, Child)
+from web.models import (Product, OrderConfirmationId, Order, Child, ParentProfile)
 
 
 log = logging.getLogger(__name__)
@@ -154,6 +154,8 @@ class LoginView(FormView):
         if user is not None:
             if user.is_active:
                 login(self.request, user)
+                profile = ParentProfile.objects.get(user=user)
+                self.request.session["is_membership_paid"] = profile.is_membership_paid
         return super(LoginView, self).form_valid(form)
 
     def form_invalid(self, form):
@@ -227,28 +229,19 @@ class PaymentView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         self.cart = request.session.get("cart", [])
+        self.is_membership_paid = request.session.get("is_membership_paid", False)
         self.order_total = get_cart_total(request)
-        cfm_id_obj = OrderConfirmationId(total_price=self.order_total)
-        cfm_id_obj.save()
-        request.session["order_confirmation_no"] = cfm_id_obj.order_cfm
-        # print("order cfm: %s" % cfm_id_obj.order_cfm)
-        # for item in self.cart:
-        #     order = Order(parent=request.user,
-        #         child=Child.objects.get(id=item["child_id"]),
-        #         product=Product.objects.get(id=item["id"]),
-        #         quantity=item["quantity"],
-        #         price=Decimal.from_float(item["price"]),
-        #         for_date=datetime.strptime(item["for_date"], '%Y-%m-%d').date(),
-        #         order_cfm=cfm_id_obj
-        #     )
-        #     order.save()
-        #     print("item saved. id: %s" % order.pk)
+        self.order_total_with_membership_fee = self.order_total if self.is_membership_paid else self.order_total + 1
+        request.session["order_total"] = self.order_total
+        request.session["order_total_with_membership_fee"] = self.order_total_with_membership_fee
         return super(PaymentView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(PaymentView, self).get_context_data(**kwargs)
         context["page_header"] = "Payment"
         context["order_total"] = self.order_total
+        context["order_total_with_membership_fee"] = self.order_total_with_membership_fee
+        context["is_membership_paid"] = self.is_membership_paid
         return context
 
 

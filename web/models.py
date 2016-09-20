@@ -28,6 +28,7 @@ class ParentProfile(ModelSaveMixin, models.Model):
     city = models.CharField(verbose_name=_('City'), max_length=100)
     state = models.CharField(max_length=2, default=_('NJ'), choices=STATE_CHOICES)
     zip_code = models.CharField(max_length=5, blank=True, null=True)
+    is_membership_paid = models.BooleanField(verbose_name=_('Membership Paid'), default=False)
 
     def __str__(self):
         return "%s, %s" % (self.user.last_name, self.user.first_name)

@@ -25,3 +25,20 @@ var addToCart = function(productId, clickedButtonId){
         });
     });
 };
+
+
+var confirmPayment = function(){
+    $.ajax({
+        url: "/confirm-payment/" + $("#id_checkNo").val(),
+        method: "GET"
+    }).done(function(response){
+        response.payloads.forEach(function(data){
+            $.notify(data.message, "success");
+            $("#id_checkNo").hide();
+            $("#id_paymentConfirmationButton").hide();
+            $("#id_note").innerHtml = "Order Confirmation #<br>" + data.confirmation_no;
+        });
+    }).error(function(response){
+        console.log(response);
+    });
+};
