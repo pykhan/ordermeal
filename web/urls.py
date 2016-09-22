@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from web.views import (LoginView, LogoutView, HomeView, ContactView,
     RegisterParentView, RegisterSuccessView, RegistrationView,
-    OrderView, OrderReviewView, RemoveFromCartView, PaymentView)
+    OrderView, OrderReviewView, RemoveFromCartView, PaymentView, ProfileView)
 from web import api
 
 
@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^logout$', LogoutView.as_view(), name='logout'),
 
     ## login required - class views
+    url(r'^profile$', ProfileView.as_view(), name='profile'),
     url(r'^order$', OrderView.as_view(), name='order'),
     url(r'^order-review$', OrderReviewView.as_view(), name='order-review'),
     url(r'^remove-from-cart/(?P<child_id>(\d+))/(?P<product_id>(\d+))/(?P<for_date>(\d{4}-\d{1,2}-\d{1,2}))$',

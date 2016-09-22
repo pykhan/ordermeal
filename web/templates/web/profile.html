@@ -1,0 +1,32 @@
+{% extends 'web/base.html' %}
+{% load widget_tweaks %}
+
+{% block page_body %}
+<div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+        <div class="lead">Change Password</div>
+        <div id="password_change">
+            <form class="form-horizontal form-signin" action="{% url 'ol:profile' %}" method="post">
+                {% csrf_token %}
+                <div class="control-group">
+                    <label class="sr-only" for="id_password">Password</label>
+                    <div class="controls">
+                        {{ change_password_form.password|attr:"placeholder:Password"|attr:"class:form-control" }}
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="sr-only" for="id_password_again">Password (again)</label>
+                    <div class="controls">
+                        {{ change_password_form.password_again|attr:"placeholder:Password (again)"|attr:"class:form-control" }}
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">Change Password</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

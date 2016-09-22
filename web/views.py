@@ -8,12 +8,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import (FormView, TemplateView, RedirectView)
-from django.urls import reverse_lazy, reverse
-from django.http import HttpResponseRedirect, HttpResponse
+from django.urls import (reverse_lazy, reverse)
+from django.http import (HttpResponseRedirect, HttpResponse)
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
 
 from web.api import (get_all_products, get_all_children, get_cart_total)
-from web.forms import (DoctorForm, ChildForm,
+from web.forms import (DoctorForm, ChildForm, ChangePasswordForm,
                         UserForm, ParentProfileForm, LoginForm)
 from web.models import (Product, OrderConfirmationId, Order, Child, ParentProfile)
 
@@ -307,3 +308,23 @@ class PaymentConfirmationView(LoginRequiredMixin, TemplateView):
         context["page_header"] = "Payment Confirmation"
         context["confirmation_number"] = self.confirmation_number
         return context
+
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'web/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileView, self).get_context_data(**kwargs)
+        context["page_header"] = "My Profile"
+        context["change_password_form"] = ChangePasswordForm(prefix='ch_pwd')
+        return context
+
+    def post(self, request, *args, **kwargs):
+        change_password_form = ChangePasswordForm(request.POST, prefix='ch_pwd')
+        if change_password_form.is_valid():
+            user = User.objects.get(id=request.user.id)
+            user.set_password(change_password_form["password"].data)
+            user.save()
+        else:
+            raise Exception("Invalid password")
+        return super(ProfileView, self).get(request, *args, **kwargs)

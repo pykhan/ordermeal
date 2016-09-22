@@ -31,19 +31,8 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <link href="{% static 'web/site.css' %}" rel="stylesheet">
     <style>
-        .product{
-            padding-left: 10px;
-            padding-right: 10px;
-            padding-bottom: 15px;
-            padding-top: 15px;
-            border: 1px solid lightgray;
-            box-sizing: border-box;
-        }
-        .product-price{
-            color: gray;
-            font-size: small;
-        }
         {% block style %}{% endblock %}
     </style>
 </head>
@@ -71,12 +60,12 @@
                         Welcome {% firstof user.first_name 'back' %} <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
+                        <li><a href="{% url 'ol:profile' %}">My Profile</a></li>
+                        {% if user.is_staff %}
+                            <li><a href="{% url 'admin:index' %}">Admin</a></li>
+                            <li role="separator" class="divider"></li>
+                        {% endif %}
                         <li><a href="{% url 'ol:logout' %}">Log out</a></li>
-                        <li>
-                            {% if user.is_staff %}
-                                <a href="{% url 'admin:index' %}">Admin</a>
-                            {% endif %}
-                        </li>
                     </ul>
                 </li>
             {% else %}

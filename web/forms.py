@@ -53,3 +53,8 @@ class ParentProfileForm(forms.ModelForm):
     class Meta:
         model = ParentProfile
         exclude = ('user', 'is_membership_paid', )
+
+
+class ChangePasswordForm(forms.Form):
+    password = forms.CharField(min_length=8, strip=False, widget=forms.PasswordInput())
+    password_again = forms.CharField(min_length=8, strip=False, widget=forms.PasswordInput())
