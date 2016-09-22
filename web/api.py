@@ -1,5 +1,5 @@
 import logging
-#from datetime import date
+from datetime import date
 from datetime import datetime
 from decimal import Decimal
 
@@ -56,9 +56,9 @@ API_CODES = {
 
 def get_all_products(product_id=None):
     if product_id:
-        products = Product.objects.filter(id=product_id, expires_at__gte=datetime.date.today()).exclude(is_active=False)
+        products = Product.objects.filter(id=product_id, expires_at__gte=date.today()).exclude(is_active=False)
     else:
-        products = Product.objects.filter(is_active=True, expires_at__gte=datetime.date.today())
+        products = Product.objects.filter(is_active=True, expires_at__gte=date.today())
     products_json = []
     for product in products:
         products_json.append({
@@ -234,3 +234,8 @@ def confirm_payment(request, check_no):
     else:
         api_resp.update(status='error', payloads=[API_CODES.get("E-106")])
     return JsonResponse(api_resp)
+
+
+@login_required
+def get_product_description(request, product_id):
+    pass

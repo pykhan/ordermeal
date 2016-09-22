@@ -42,3 +42,17 @@ var confirmPayment = function(){
         console.log(response);
     });
 };
+
+
+var showDescription = function(pid){
+    $.ajax({
+        url: "/product-description/" + pid,
+        method: "GET"
+    }).done(function(response){
+        response.payloads.forEach(function(data){
+            $.notify(data.message, "success");
+        });
+    }).error(function(response){
+        console.log(response);
+    });
+};

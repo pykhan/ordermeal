@@ -33,4 +33,5 @@ urlpatterns = [
     url(r'^categories$', api.get_categories, name='api-categories'),
     url(r'^products/(?P<product_id>\d+)$', api.get_products, name='api-product'),
     url(r'^products$', api.get_products, name='api-products'),
+    url(r'^product-description/(?P<product_id>\d+)$', api.get_product_description, name='api-product-description'),
 ]
