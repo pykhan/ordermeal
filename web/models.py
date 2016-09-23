@@ -107,15 +107,7 @@ class OrderConfirmationId(ModelSaveMixin, models.Model):
     other_order_cfm = models.CharField(max_length=50, verbose_name=_('Other Order Confirmation'), blank=True, null=True)
     total_price = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     has_paid = models.BooleanField(verbose_name=_('Paid ?'), default=False)
-
-    def save(self, *args, **kwargs):
-        cfm = OrderConfirmationId.objects.order_by('-order_cfm')
-        print(cfm)
-        if cfm is not None and len(cfm) > 0:
-            self.order_cfm = cfm[0].order_cfm + 1
-        else:
-            self.order_cfm = 1001   ## first order confirmation number
-        return super(OrderConfirmationId, self).save(*args, **kwargs)
+    has_delivered = models.BooleanField(verbose_name=_('Delivered ?'), default=False)
 
     def __str__(self):
         return "%s" % self.order_cfm

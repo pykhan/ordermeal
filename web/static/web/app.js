@@ -50,7 +50,10 @@ var showDescription = function(pid){
         method: "GET"
     }).done(function(response){
         response.payloads.forEach(function(data){
-            $.notify(data.message, "success");
+            if(data.message.trim() != "")
+                $("#div_"+pid).notify(data.message, "info");
+            else
+                $("#div_"+pid).notify("Product info is missing.\nEmail admin to add info.", "warn");
         });
     }).error(function(response){
         console.log(response);

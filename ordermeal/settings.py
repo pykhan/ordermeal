@@ -176,3 +176,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 14400  # 4 hours
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
+FIXTURE_DIRS = [
+    os.path.join(BASE_DIR, 'web/fixtures/data.json'),
+]

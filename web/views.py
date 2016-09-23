@@ -111,12 +111,19 @@ class RegisterParentView(FormView):
                 if self.doctor_form.has_changed():
                     ## save doctor info
                     doctor = self.doctor_form.save(commit=False)
-                    doctor.child_id = child_id
+                    doctor.child = child
                     doctor.save()
 
-            return HttpResponseRedirect('/web/register/success')
+            return HttpResponseRedirect(redirect_to=reverse_lazy('ol:register-success'))
         else:
-            print("invalid form")
+            if not self.user_form.is_valid():
+                self.form_invalid(self.user_form)
+            elif not self.parent_profile_form.is_valid():
+                self.form_invalid(self.parent_profile_form)
+            elif not self.child_form.is_valid():
+                self.form_invalid(self.child_form)
+            elif not self.doctor_form.is_valid():
+                self.form_invalid(self.doctor_form)
         return super(RegisterParentView, self).post(request, *args, **kwargs)
 
     def form_invalid(self, form):
@@ -160,7 +167,6 @@ class LoginView(FormView):
         return super(LoginView, self).form_valid(form)
 
     def form_invalid(self, form):
-        print("invalid form: %s" % form.errors)
         return super(LoginView, self).form_invalid(form)
 
     def get_success_url(self):
@@ -328,3 +334,13 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         else:
             raise Exception("Invalid password")
         return super(ProfileView, self).get(request, *args, **kwargs)
+
+
+class ReportView(LoginRequiredMixin, TemplateView):
+    template_name = 'web/report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ReportView, self).get_context_data(**kwargs)
+        context["page_header"] = "Site Admin Report"
+        context["change_password_form"] = ChangePasswordForm(prefix='ch_pwd')
+        return context

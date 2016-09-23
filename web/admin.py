@@ -27,8 +27,11 @@ class ChildAdmin(admin.ModelAdmin):
 
 @admin.register(ParentProfile)
 class ParentProfileAdmin(admin.ModelAdmin):
-    list_display = ('address_1', 'address_2', 'city', 'state', 'zip_code', 'work_phone', 'cell_phone', )
+    list_display = ('parent_name', 'address_1', 'address_2', 'city', 'state', 'zip_code', 'work_phone', 'cell_phone', )
     empty_value_display = '-empty-'
+
+    def parent_name(self, obj):
+        return "%s %s" % (obj.user.first_name, obj.user.last_name)
 
 
 @admin.register(Product)
@@ -39,13 +42,13 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(OrderConfirmationId)
 class OrderConfirmationIdAdmin(admin.ModelAdmin):
-    list_display = ('order_cfm', 'other_order_cfm', 'total_price', 'has_paid', )
-    ordering = ('-order_cfm', )
+    list_display = ('order_cfm', 'other_order_cfm', 'total_price', 'has_paid', 'has_delivered', )
+    ordering = ('has_delivered', 'has_paid', '-order_cfm', )
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('cfm_num', 'other_cfm', 'parent_name', 'child_name', 'product_name', 'quantity', 'price', 'for_date', 'has_paid', )
+    list_display = ('cfm_num', 'other_cfm', 'parent_name', 'child_name', 'product_name', 'quantity', 'price', 'for_date', 'has_paid', 'has_delivered', )
     ordering = ('-order_cfm', )
 
     def parent_name(self, obj):
@@ -65,3 +68,6 @@ class OrderAdmin(admin.ModelAdmin):
 
     def has_paid(self, obj):
         return obj.order_cfm.has_paid
+
+    def has_delivered(self, obj):
+        return obj.order_cfm.has_delivered

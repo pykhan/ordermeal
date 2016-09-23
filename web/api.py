@@ -81,13 +81,6 @@ def get_all_children(parent):
                 'first_name': child.first_name,
                 'last_name': child.last_name
             },)
-    else:
-        # the entire else block should be removed
-        child_list.append({
-            'id': 0,
-            'first_name': 'Anna',
-            'last_name': 'Hannan'
-        },)
     return child_list
 
 
@@ -217,8 +210,14 @@ def confirm_payment(request, check_no):
     total_charge = request.session.get("order_total_with_membership_fee", None)
     cart = request.session.get("cart", None)
     if all([total_charge, cart]):
-        other_order_cfm = (request.user.last_name + "-" + check_no).title()
-        cfm_id_obj = OrderConfirmationId(other_order_cfm=other_order_cfm, total_price=total_charge)
+        other_order_cfm = (request.user.last_name + "-Check-" + check_no).title()
+        last_order_obj = OrderConfirmationId.objects.order_by('-order_cfm')
+        if last_order_obj:
+            last_order = last_order_obj[0].order_cfm
+        else:
+            last_order = 1001
+        cfm_id_obj = OrderConfirmationId(order_cfm=last_order, other_order_cfm=other_order_cfm,
+                                            total_price=Decimal.from_float(total_charge))
         cfm_id_obj.save()
         for item in cart:
             Order(parent=request.user,
@@ -238,4 +237,7 @@ def confirm_payment(request, check_no):
 
 @login_required
 def get_product_description(request, product_id):
-    pass
+    api_resp = {}
+    product_obj = Product.objects.get(id=product_id)
+    api_resp.update(status='success', payloads=[{'message': product_obj.description}])
+    return JsonResponse(api_resp)
