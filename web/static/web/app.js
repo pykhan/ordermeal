@@ -32,11 +32,13 @@ var confirmPayment = function(){
         url: "/confirm-payment/" + $("#id_checkNo").val(),
         method: "GET"
     }).done(function(response){
+        var notice = "";
+        var cfm = "<div>Your confirmation #: <h2>";
         response.payloads.forEach(function(data){
-            $.notify(data.message, "success");
             $("#id_checkNo").hide();
             $("#id_paymentConfirmationButton").hide();
-            $("#id_note").innerHtml = "Order Confirmation #<br>" + data.confirmation_no;
+            $("#id_note").html(cfm + data.confirmation_no + "</h2></div>");
+            $.notify(data.message, "success");
         });
     }).error(function(response){
         console.log(response);

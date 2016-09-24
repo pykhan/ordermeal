@@ -2,7 +2,8 @@ from django.conf.urls import url
 
 from web.views import (LoginView, LogoutView, HomeView, ContactView,
     RegisterParentView, RegisterSuccessView, RegistrationView, ReportView,
-    OrderView, OrderReviewView, RemoveFromCartView, PaymentView, ProfileView)
+    OrderView, OrderReviewView, RemoveFromCartView, PaymentView, ProfileView,
+    PaymentConfirmationView)
 from web import api
 
 
@@ -25,6 +26,7 @@ urlpatterns = [
         RemoveFromCartView.as_view(), name='remove-from-cart'),
     url(r'^payment$', PaymentView.as_view(), name='payment'),
     url(r'^report$', ReportView.as_view(), name='report'),
+    url(r'^payment-confirmation$', PaymentConfirmationView.as_view(), name='payment-confirmation'),
 
     ## login required - api calls
     url(r'^confirm-payment/(?P<check_no>\w+)$', api.confirm_payment, name='confirm-payment'),

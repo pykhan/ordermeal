@@ -255,13 +255,11 @@ class PaymentView(LoginRequiredMixin, TemplateView):
 
 class PaymentConfirmationView(LoginRequiredMixin, TemplateView):
     template_name = 'web/payment-confirmation.html'
-    confirmation_number = None
-    paypal_confirmation = None
 
     def get_context_data(self, **kwargs):
         context = super(PaymentConfirmationView, self).get_context_data(**kwargs)
         context["page_header"] = "Payment Confirmation"
-        context["confirmation_number"] = self.confirmation_number
+        context["confirmation_number"] = self.request.session.get("confirmation_number")
         return context
 
 
