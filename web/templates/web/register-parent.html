@@ -1,19 +1,7 @@
 {% extends 'web/base.html' %}
 {% load widget_tweaks %}
 
-{% block style %}
-    .error_title {
-        background-color: yellow;
-        color: red;
-        font-weight: bold;
-    }
-    .error_list {
-        color: red;
-    }
-{% endblock %}
-
 {% block page_body %}
-    <!--<p class="lead">You must register to be able to order</p>-->
     <h3>Title</h3>
     <p>
         Other than the docto's info, please complete the entire form. These information are necessary
@@ -33,7 +21,7 @@
             <div>&nbsp;</div>
         {% endif %}
 
-        <form class="form-horizontal" name="RegistrationForm" action="{% url 'web:register-parent' %}" method="post">
+        <form class="form-horizontal" name="RegistrationForm" action="{% url 'ol:register-parent' %}" method="post">
             {% csrf_token %}
             <div class="row">
                 {# ACCESS INFO #}
@@ -57,6 +45,9 @@
                             {{ user_form.password_again|attr:"placeholder:Password (again)"|attr:"class:form-control" }}
                         </div>
                     </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="lead">Parent's Info</p>
                     <div class="control-group">
                         <label class="sr-only" for="id_username">First Name</label>
                         <div class="control">
@@ -75,10 +66,6 @@
                             {{ user_form.email|attr:"placeholder:Email"|attr:"class:form-control" }}
                         </div>
                     </div>
-                </div>
-
-                <div class="col-md-6">
-                    <p class="lead">Parent's Info</p>
                     <div class="control-group">
                         <label class="sr-only" for="id_cell_phone">Cell Phone</label>
                         <div class="control">
@@ -101,42 +88,27 @@
                 <div class="col-md-12">
                     <hr>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <p class="lead">Child's Info</p>
                     {# First Child's Info #}
-                    <div class="control-group">
-                        <label class="sr-only" for="id_fchild_form-first_name">First Name</label>
-                        <div class="control">
-                            {{ child_form.first_name|attr:"placeholder:First Name"|attr:"class:form-control" }}
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="sr-only" for="id_child_form-first_name">First Name</label>
+                            <div class="control">
+                                {{ child_form.first_name|attr:"placeholder:First Name"|attr:"class:form-control" }}
+                            </div>
                         </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="sr-only" for="id_child_form-middle_name">Middle Name</label>
-                        <div class="control">
-                            {{ child_form.middle_name|attr:"placeholder:Middle Name"|attr:"class:form-control" }}
+                        <div class="col-md-3">
+                            <label class="sr-only" for="id_child_form-middle_name">Middle Name</label>
+                            <div class="control">
+                                {{ child_form.middle_name|attr:"placeholder:Middle Name"|attr:"class:form-control" }}
+                            </div>
                         </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="sr-only" for="id_child_form-last_name">Last Name</label>
-                        <div class="control">
-                            {{ child_form.last_name|attr:"placeholder:Last Name"|attr:"class:form-control" }}
-                        </div>
-                    </div>
-                    <p>Child's Birthday:</p>
-                    <div class="control-group">
-                        <label class="sr-only" for="id_child_form-birth_date">Birth Date</label>
-                        <div class="control">
-                            {{ child_form.birth_date }}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <p class="lead">Food Allergies?</p>
-                    <p>Please list all the allergies, one per line.</p>
-                    <div class="control-group">
-                        <label class="sr-only" for="id_child_form-allergies">Allergies</label>
-                        <div class="control">
-                            {{ child_form.allergies }}
+                        <div class="col-md-3">
+                            <label class="sr-only" for="id_child_form-last_name">Last Name</label>
+                            <div class="control">
+                                {{ child_form.last_name|attr:"placeholder:Last Name"|attr:"class:form-control" }}
+                            </div>
                         </div>
                     </div>
                 </div>

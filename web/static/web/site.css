@@ -45,3 +45,12 @@
     color: gray;
     font-size: small;
 }
+
+.error_title {
+    background-color: yellow;
+    color: red;
+    font-weight: bold;
+}
+.error_list {
+    color: red;
+}

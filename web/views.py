@@ -21,10 +21,6 @@ from web.models import (Product, OrderConfirmationId, Order, Child, ParentProfil
 
 
 log = logging.getLogger(__name__)
-# paypalrestsdk.configure({
-#   "mode": "sandbox", # sandbox or live
-#   "client_id": "AeUbUlYRgl5DJPvotj1UmGIswdlQpyXm3qPJq3ZBQTUOCQtkEsCpCytFYtdDvNu_LnFKWU-fRUDHylz4",
-#   "client_secret": "EIA7iByWPUprfEtesDHMdh8SaCZ_kdKMfej3qEbr5R5cJ65j-kKj9Qc07divU1AiaE8CXZINV7EAvaZ7" })
 
 
 class LoginRequiredMixin(object):
@@ -150,8 +146,6 @@ class LoginView(FormView):
         if user is not None:
             if user.is_active:
                 login(self.request, user)
-                profile = ParentProfile.objects.get(user=user)
-                self.request.session["is_membership_paid"] = profile.is_membership_paid
         return super(LoginView, self).form_valid(form)
 
     def form_invalid(self, form):
@@ -224,7 +218,8 @@ class PaymentView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         self.cart = request.session.get("cart", [])
-        self.is_membership_paid = request.session.get("is_membership_paid", False)
+        pp = ParentProfile.objects.get(user=request.user)
+        self.is_membership_paid = pp.is_membership_paid
         self.order_total = get_cart_total(request)
         self.order_total_with_membership_fee = self.order_total if self.is_membership_paid else self.order_total + 1
         request.session["order_total"] = self.order_total
@@ -276,5 +271,5 @@ class ReportView(LoginRequiredMixin, ListView):
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        self.queryset = Order.objects.filter(order_cfm__has_delivered=False).order_by('for_date')
+        self.queryset = Order.objects.order_by('for_date')
         return super(ReportView, self).get(request, *args, **kwargs)
