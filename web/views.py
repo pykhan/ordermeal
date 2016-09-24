@@ -15,7 +15,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 
 from web.api import (get_all_products, get_all_children, get_cart_total)
-from web.forms import (DoctorForm, ChildForm, ChangePasswordForm,
+from web.forms import (ChildForm, ChangePasswordForm,
                         UserForm, ParentProfileForm, LoginForm)
 from web.models import (Product, OrderConfirmationId, Order, Child, ParentProfile)
 
@@ -60,14 +60,12 @@ class RegisterParentView(FormView):
     template_name = 'web/register-parent.html'
     success_url = reverse_lazy('ol:register-success')
     form_class = UserForm
-    doctor_form = None
     child_form = None
     parent_profile_form = None
     user_form = None
     is_successful = False
 
     def get(self, request, *args, **kwargs):
-        self.doctor_form = DoctorForm(prefix='doctor_form')
         self.child_form = ChildForm(prefix='child_form')
         self.parent_profile_form = ParentProfileForm(prefix='parent_profile_form')
         self.user_form = self.form_class(prefix='user_form')
@@ -79,19 +77,16 @@ class RegisterParentView(FormView):
         context["user_form"] = self.user_form
         context["parent_profile_form"] = self.parent_profile_form
         context["child_form"] = self.child_form
-        context["doctor_form"] = self.doctor_form
         return context
 
     def post(self, request, *args, **kwargs):
-        self.doctor_form = DoctorForm(request.POST, prefix='doctor_form')
         self.child_form = ChildForm(request.POST, prefix='child_form')
         self.parent_profile_form = ParentProfileForm(request.POST, prefix='parent_profile_form')
         self.user_form = self.form_class(request.POST, prefix='user_form')
 
         if all([self.user_form.is_valid(),
                 self.parent_profile_form.is_valid(),
-                self.child_form.is_valid(),
-                self.doctor_form.is_valid()]):
+                self.child_form.is_valid()]):
             ## save user
             parent = self.user_form.save(commit=False)
             parent.set_password(self.user_form["password"].data)
@@ -109,12 +104,6 @@ class RegisterParentView(FormView):
                 child.parent_id = parent.id
                 child.save()
 
-                if self.doctor_form.has_changed():
-                    ## save doctor info
-                    doctor = self.doctor_form.save(commit=False)
-                    doctor.child = child
-                    doctor.save()
-
             return HttpResponseRedirect(redirect_to=reverse_lazy('ol:register-success'))
         else:
             if not self.user_form.is_valid():
@@ -123,8 +112,6 @@ class RegisterParentView(FormView):
                 self.form_invalid(self.parent_profile_form)
             elif not self.child_form.is_valid():
                 self.form_invalid(self.child_form)
-            elif not self.doctor_form.is_valid():
-                self.form_invalid(self.doctor_form)
         return super(RegisterParentView, self).post(request, *args, **kwargs)
 
     def form_invalid(self, form):

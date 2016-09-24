@@ -7,18 +7,11 @@ from django.contrib.auth.models import User
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 
-from web.models import (ParentProfile, Child, Doctor)
+from web.models import (ParentProfile, Child)
 
 
 class LoginForm(AuthenticationForm):
     pass
-
-
-class DoctorForm(forms.ModelForm):
-
-    class Meta:
-        model = Doctor
-        exclude = ('child', )
 
 
 class ChildForm(forms.ModelForm):

@@ -54,27 +54,6 @@ class Child(ModelSaveMixin, models.Model):
         verbose_name_plural = _("Children")
 
 
-class Doctor(ModelSaveMixin, models.Model):
-    child = models.ForeignKey(Child, verbose_name=_("Child"))
-    first_name = models.CharField(verbose_name=_('First Name'), max_length=30, blank=True, null=True)
-    middle_name = models.CharField(verbose_name=_('Middle Name'), max_length=30, blank=True, null=True)
-    last_name = models.CharField(verbose_name=_('Last Name'), max_length=30, blank=True, null=True)
-    work_phone = PhoneNumberField(verbose_name=_('Work Phone'), blank=True, null=True)
-    cell_phone = PhoneNumberField(verbose_name=_('Cell Phone'), blank=True, null=True)
-    address_1 = models.CharField(verbose_name=_('Address 1'), max_length=100, blank=True, null=True)
-    address_2 = models.CharField(verbose_name=_('Address 2'), max_length=100, blank=True, null=True)
-    city = models.CharField(verbose_name=_('City'), max_length=100, blank=True, null=True)
-    state = models.CharField(max_length=2, default=_('NJ'), blank=True, null=True, choices=STATE_CHOICES)
-    zip_code = models.CharField(max_length=5, blank=True, null=True)
-
-    def __str__(self):
-        return "%s, %s" % (self.last_name, self.first_name)
-
-    class Meta:
-        verbose_name = _("Doctor")
-        verbose_name_plural = _("Doctors")
-
-
 class Category(ModelSaveMixin, models.Model):
     name = models.CharField(max_length=50, verbose_name="Category Name")
 
