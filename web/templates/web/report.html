@@ -2,7 +2,43 @@
 {% load widget_tweaks %}
 
 {% block page_body %}
-<ul>
-    <li>Undelivered Orders</li>
-</ul>
+<div class="row">
+    <div class="pull-right">
+        <a href="javascript:window.print();">Print</a>
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <th>Cfm #</th>
+            <th>Parent's Name</th>
+            <th>Child's Name</th>
+            <th>Order Date</th>
+            <th>Item Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Paid ?</th>
+        </thead>
+        <tbody>
+            {% for order in object_list %}
+                <tr>
+                    <td>{{ order.order_cfm.order_cfm }}</td>
+                    <td>{{ order.parent.first_name }} {{ order.parent.last_name }}</td>
+                    <td>{{ order.child.first_name }} {{ order.child.last_name }}</td>
+                    <td>{{ order.for_date }}</td>
+                    <td>{{ order.product.name }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>{{ order.price }}</td>
+                    <td>
+                        {% if order.order_cfm.has_paid %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

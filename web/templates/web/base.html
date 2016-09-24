@@ -62,6 +62,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="{% url 'ol:profile' %}">My Profile</a></li>
                         {% if user.is_staff %}
+                            <li><a href="{% url 'ol:report' %}">Report</a></li>
                             <li><a href="{% url 'admin:index' %}">Admin</a></li>
                             <li role="separator" class="divider"></li>
                         {% endif %}

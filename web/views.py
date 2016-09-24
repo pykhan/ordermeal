@@ -1,3 +1,4 @@
+
 import logging
 from datetime import datetime
 from decimal import Decimal
@@ -7,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.generic import (FormView, TemplateView, RedirectView)
+from django.views.generic import (FormView, TemplateView, RedirectView, ListView)
 from django.urls import (reverse_lazy, reverse)
 from django.http import (HttpResponseRedirect, HttpResponse)
 from django.contrib.auth.forms import AuthenticationForm
@@ -257,58 +258,6 @@ class PaymentConfirmationView(LoginRequiredMixin, TemplateView):
     confirmation_number = None
     paypal_confirmation = None
 
-    # def get(self, request, *args, **kwargs):
-    #     self.confirmation_number = request.session.get("order_confirmation_no", None)
-    #     cart_total = get_cart_total(request)
-    #     paypal_charge = cart_total * 0.05
-    #     total_charge = cart_total + paypal_charge
-    #     item_list = []
-    #     for item in request.sessioin.get("cart"):
-    #         item_list.append({
-    #             "name": item["name"],
-    #             "sku": item["id"],
-    #             "price": str(item["price"]),
-    #             "quantity": item["quantity"]
-    #         },)
-    #     payment = paypalrestsdk.Payment({
-    #         "intent": "sale",
-    #         "payer": {
-    #             "payment_method": "paypal"
-    #         },
-    #         "redirect_urls": {
-    #             "return_url": "http://localhost:8000/payment/execute",
-    #             "cancel_url": "http://localhost:8000/"
-    #         },
-    #         "transactions": [{
-
-    #             # ItemList
-    #             "item_list": {
-    #                 "items": item_list
-    #             },
-
-    #             # Amount
-    #             # Let's you specify a payment amount.
-    #             "amount": {
-    #                 "total": str(total_charge),
-    #                 "currency": "USD"},
-    #             "description": "This is the payment transaction description."
-    #         }]
-    #     })
-    #     if payment.create():
-    #         self.paypal_confirmation = payment.id
-    #         print("Payment[%s] created successfully" % (payment.id))
-    #         # Redirect the user to given approval url
-    #         for link in payment.links:
-    #             if link.method == "REDIRECT":
-    #                 # Convert to str to avoid google appengine unicode issue
-    #                 # https://github.com/paypal/rest-api-sdk-python/pull/58
-    #                 redirect_url = str(link.href)
-    #                 print("Redirect for approval: %s" % (redirect_url))
-    #     else:
-    #         print("Error while creating payment:")
-    #         print(payment.error)
-    #     return super(PaymentConfirmationView, self).get(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super(PaymentConfirmationView, self).get_context_data(**kwargs)
         context["page_header"] = "Payment Confirmation"
@@ -333,14 +282,14 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             user.save()
         else:
             raise Exception("Invalid password")
-        return super(ProfileView, self).get(request, *args, **kwargs)
+        return super(ProfileView, self).post(request, *args, **kwargs)
 
 
-class ReportView(LoginRequiredMixin, TemplateView):
+class ReportView(LoginRequiredMixin, ListView):
     template_name = 'web/report.html'
+    model = Order
+    queryset = None
 
-    def get_context_data(self, **kwargs):
-        context = super(ReportView, self).get_context_data(**kwargs)
-        context["page_header"] = "Site Admin Report"
-        context["change_password_form"] = ChangePasswordForm(prefix='ch_pwd')
-        return context
+    def get(self, request, *args, **kwargs):
+        self.queryset = Order.objects.filter(order_cfm__has_delivered=False).order_by('for_date')
+        return super(ReportView, self).get(request, *args, **kwargs)

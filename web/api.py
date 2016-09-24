@@ -97,7 +97,6 @@ def session_cleanup(request):
     request.session.pop("cart")
     request.session.pop("order_total_with_membership_fee")
     request.session.pop("order_total")
-    request.session.pop("is_membership_paid")
 
 
 @login_required
@@ -213,7 +212,7 @@ def confirm_payment(request, check_no):
         other_order_cfm = (request.user.last_name + "-Check-" + check_no).title()
         last_order_obj = OrderConfirmationId.objects.order_by('-order_cfm')
         if last_order_obj:
-            last_order = last_order_obj[0].order_cfm
+            last_order = last_order_obj[0].order_cfm + 1
         else:
             last_order = 1001
         cfm_id_obj = OrderConfirmationId(order_cfm=last_order, other_order_cfm=other_order_cfm,
