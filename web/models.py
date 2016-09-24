@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
@@ -23,12 +25,9 @@ class ParentProfile(ModelSaveMixin, models.Model):
     cell_phone = PhoneNumberField(verbose_name=_('Cell Phone'))
     home_phone = PhoneNumberField(verbose_name=_('Home Phone'), blank=True, null=True)
     work_phone = PhoneNumberField(verbose_name=_('Work Phone'), blank=True, null=True)
-    address_1 = models.CharField(verbose_name=_('Address 1'), max_length=100)
-    address_2 = models.CharField(verbose_name=_('Address 2'), max_length=100, blank=True, null=True)
-    city = models.CharField(verbose_name=_('City'), max_length=100)
-    state = models.CharField(max_length=2, default=_('NJ'), choices=STATE_CHOICES)
-    zip_code = models.CharField(max_length=5, blank=True, null=True)
     is_membership_paid = models.BooleanField(verbose_name=_('Membership Paid'), default=False)
+    gets_free_meal = models.BooleanField(verbose_name=_('Receives Free Meal'), default=False)
+    gets_reduced_price_meal = models.BooleanField(verbose_name=_('Receives Reduced Price Meal'), default=False)
 
     def __str__(self):
         return "%s, %s" % (self.user.last_name, self.user.first_name)
@@ -43,11 +42,9 @@ class Child(ModelSaveMixin, models.Model):
     first_name = models.CharField(verbose_name=_('First Name'), max_length=30)
     middle_name = models.CharField(verbose_name=_('Middle Name'), max_length=30, blank=True, null=True)
     last_name = models.CharField(verbose_name=_('Last Name'), max_length=30)
-    birth_date = models.DateField(verbose_name=_('Birth Date'), blank=True, null=True)
-    allergies = models.TextField(verbose_name=_('Allergies'), blank=True, null=True)
 
     def __str__(self):
-        return "%s, %s" % (self.last_name, self.first_name)
+        return "%s %s" % (self.first_name, self.last_name)
 
     class Meta:
         verbose_name = _("Child")
@@ -69,9 +66,13 @@ class Product(ModelSaveMixin, models.Model):
     name = models.CharField(max_length=50)
     unit_price = models.DecimalField(max_digits=7, decimal_places=2)
     description = models.TextField(verbose_name=_('Description'), blank=True, null=True)
-    category = models.ForeignKey(Category)
     is_active = models.BooleanField(verbose_name=_('Active ?'), default=True)
     expires_at = models.DateField(verbose_name=_('Expires At'), blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.description.strip() == "":
+            self.description = self.name
+        super(Product, self).save(*args, **kwargs)
 
     def __str__(self):
         return '%s (@ %s)' % (self.name, self.unit_price)
@@ -86,7 +87,6 @@ class OrderConfirmationId(ModelSaveMixin, models.Model):
     other_order_cfm = models.CharField(max_length=50, verbose_name=_('Other Order Confirmation'), blank=True, null=True)
     total_price = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     has_paid = models.BooleanField(verbose_name=_('Paid ?'), default=False)
-    has_delivered = models.BooleanField(verbose_name=_('Delivered ?'), default=False)
 
     def __str__(self):
         return "%s" % self.order_cfm
