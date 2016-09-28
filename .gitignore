@@ -93,3 +93,6 @@ ENV/
 
 # Config files
 *.config
+
+# IDE files
+.idea/
