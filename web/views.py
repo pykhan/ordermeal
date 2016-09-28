@@ -171,10 +171,16 @@ class LogoutView(RedirectView):
 
 class OrderView(LoginRequiredMixin, TemplateView):
     template_name = 'web/order.html'
+    min_dt = None
+
+    def get(self, request, *args, **kwargs):
+        dt = datetime.today()
+        return super(OrderView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(OrderView, self).get_context_data(**kwargs)
         context["page_header"] = "Available Items"
+        context["min_dt"] = None
         context["product_list"] = get_all_products()
         context["child_list"] = get_all_children(self.request.user)
         return context

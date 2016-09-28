@@ -5,9 +5,10 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-
 from localflavor.us.models import PhoneNumberField
 from localflavor.us.us_states import STATE_CHOICES
+
+from web.utils import DAY_CHOICES, EVERY_WEEK_DAY
 
 
 class ModelSaveMixin(object):
@@ -69,6 +70,7 @@ class Product(ModelSaveMixin, models.Model):
     description = models.TextField(verbose_name=_('Description'), blank=True, null=True)
     is_active = models.BooleanField(verbose_name=_('Active ?'), default=True)
     expires_at = models.DateField(verbose_name=_('Expires At'), blank=True, null=True)
+    available_day = models.IntegerField(verbose_name=_('Day Available'), choices=DAY_CHOICES, default=EVERY_WEEK_DAY)
 
     def save(self, *args, **kwargs):
         if self.description.strip() == "":

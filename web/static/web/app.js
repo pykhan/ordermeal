@@ -1,13 +1,19 @@
-var dateFormat = "YYYY-MM-DD";
+var appDateFormat = "YYYY-MM-DD";
+
+var endOfMonth = function(){
+    var today = new Date();
+    var lastDayOfMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
+    return dateFormat(lastDayOfMonth, appDateFormat.toLowerCase());
+};
 
 /* http://www.daterangepicker.com/ */
 $('input[id="itemDate"]').daterangepicker({
     singleDatePicker: true,
     showDropdowns: true,
-    minDate: moment().add(3, 'days').format(dateFormat),
-    maxDate: moment().add(21, 'days').format(dateFormat),
+    minDate: moment().add(3, 'days').format(appDateFormat),
+    maxDate: endOfMonth(),
     locale: {
-        format: dateFormat
+        format: appDateFormat
     }
 });
 

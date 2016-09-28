@@ -24,7 +24,7 @@ class ParentProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'unit_price', 'description', 'expires_at')
+    list_display = ('name', 'unit_price', 'description', 'expires_at', 'available_day', )
     ordering = ('expires_at', 'name')
 
 

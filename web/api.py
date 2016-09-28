@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 from decimal import Decimal
 
+from django.db.models import Q
 from django.contrib import sessions
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
@@ -10,6 +11,8 @@ from django.http import JsonResponse
 
 from web.models import (Category, Product, Child, OrderConfirmationId, Order)
 
+
+EVERY_WEEK_DAY = 9
 
 log = logging.getLogger(__name__)
 
@@ -65,8 +68,7 @@ def get_all_products(product_id=None):
             'id': product.id,
             'name': product.name,
             'unit_price': product.unit_price,
-            'description': product.description,
-            'category_id': product.category.id
+            'description': product.description
         },)
     return products_json
 
@@ -100,11 +102,19 @@ def session_cleanup(request):
 
 
 @login_required
-def get_products(request, product_id=None):
-    api_resp = {
-        'status': 'success',
-        'payloads': get_all_products(product_id=product_id)
-    }
+def get_products(request, for_date):
+    api_resp = {}
+    wd = datetime.strptime(for_date, "%Y-%m-%d").date().weekday()
+    products = Product.objects.filter(Q(available_day=wd) |
+        Q(available_day=EVERY_WEEK_DAY)).exclude(is_active=False, expires_at__lt=date.today())
+    products_json = []
+    for product in products:
+        products_json.append({
+            'id': product.id,
+            'name': product.name,
+            'unit_price': product.unit_price
+        },)
+    api_resp.update(status='success', payloads=products_json)
     return JsonResponse(api_resp)
 
 
