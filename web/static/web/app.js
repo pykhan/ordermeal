@@ -1,25 +1,10 @@
 var appDateFormat = "YYYY-MM-DD";
 
-var endOfMonth = function(){
-    var today = new Date();
-    var lastDayOfMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
-    return dateFormat(lastDayOfMonth, appDateFormat.toLowerCase());
-};
-
-/* http://www.daterangepicker.com/ */
-$('input[id="itemDate"]').daterangepicker({
-    singleDatePicker: true,
-    showDropdowns: true,
-    minDate: moment().add(3, 'days').format(appDateFormat),
-    maxDate: endOfMonth(),
-    locale: {
-        format: appDateFormat
-    }
-});
 
 var addToCart = function(productId, clickedButtonId){
+    console.log($("#id_order_date").val());
     $.ajax({
-        url: "/add-to-cart/" + $("#child").val() + "/" + productId + "/" + $("#itemDate").val(),
+        url: "/add-to-cart/" + $("#child").val() + "/" + productId + "/" + $("#id_order_date").val(),
         method: "GET"
     }).done(function(response){
         response.payloads.forEach(function(data){

@@ -3,19 +3,15 @@ from datetime import date
 from datetime import datetime
 from decimal import Decimal
 
-from django.db.models import Q
-from django.contrib import sessions
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
+from django.db.models import Q
 from django.http import JsonResponse
 
-from web.models import (Category, Product, Child, OrderConfirmationId, Order)
-
+from web.models import (Product, Child, OrderConfirmationId, Order)
 
 EVERY_WEEK_DAY = 9
 
 log = logging.getLogger(__name__)
-
 
 API_CODES = {
     'E-101': {
@@ -69,7 +65,7 @@ def get_all_products(product_id=None):
             'name': product.name,
             'unit_price': product.unit_price,
             'description': product.description
-        },)
+        }, )
     return products_json
 
 
@@ -82,7 +78,7 @@ def get_all_children(parent):
                 'id': child.id,
                 'first_name': child.first_name,
                 'last_name': child.last_name
-            },)
+            }, )
     return child_list
 
 
@@ -101,49 +97,27 @@ def session_cleanup(request):
     request.session.pop("order_total")
 
 
-@login_required
-def get_products(request, for_date):
-    api_resp = {}
+def get_products_by_date(for_date):
     wd = datetime.strptime(for_date, "%Y-%m-%d").date().weekday()
     products = Product.objects.filter(Q(available_day=wd) |
-        Q(available_day=EVERY_WEEK_DAY)).exclude(is_active=False, expires_at__lt=date.today())
+                                      Q(available_day=EVERY_WEEK_DAY)).exclude(is_active=False,
+                                                                               expires_at__lt=date.today())
     products_json = []
     for product in products:
         products_json.append({
             'id': product.id,
             'name': product.name,
             'unit_price': product.unit_price
-        },)
-    api_resp.update(status='success', payloads=products_json)
-    return JsonResponse(api_resp)
+        }, )
+    return products_json
 
 
 @login_required
-def get_categories(request, category_id=None):
-    api_resp = {}
-    if category_id:
-        categories = Category.objects.filter(id=category_id)
-        if categories:
-            category = categories[0]
-            api_resp.update(status='success',
-                payloads=[{
-                    category.id: {
-                        'name': product.name
-                    }
-                }])
-        else:
-            api_resp.update(status='failure', payloads=[API_CODES.get('E-102')])
-    else:
-        categories = Category.objects.all()
-        payloads = []
-        for category in categories:
-            payloads.append({
-                category.id: {
-                    'name': category.name
-                }
-            })
-        api_resp.update(status='success', payloads=payloads)
-    return JsonResponse(data)
+def get_products(request, for_date):
+    return JsonResponse({
+        'status': 'success',
+        'payloads': get_products_by_date(for_date=for_date)
+    })
 
 
 @login_required
@@ -175,7 +149,7 @@ def add_to_cart(request, child_id, product_id, for_date):
                     'quantity': 1,
                     'price': float(product.unit_price),
                     'for_date': for_date
-                },)
+                }, )
         else:
             cart.append({
                 'id': product.id,
@@ -185,7 +159,7 @@ def add_to_cart(request, child_id, product_id, for_date):
                 'quantity': 1,
                 'price': float(product.unit_price),
                 'for_date': for_date
-            },)
+            }, )
         request.session["cart"] = cart
         api_resp.update(status='success', payloads=[API_CODES.get('S-101')])
     return JsonResponse(api_resp)
@@ -226,17 +200,17 @@ def confirm_payment(request, check_no):
         else:
             last_order = 1001
         cfm_id_obj = OrderConfirmationId(order_cfm=last_order, other_order_cfm=other_order_cfm,
-                                            total_price=Decimal.from_float(total_charge))
+                                         total_price=Decimal.from_float(total_charge))
         cfm_id_obj.save()
         for item in cart:
             Order(parent=request.user,
-                child=Child.objects.get(id=item["child_id"]),
-                product=Product.objects.get(id=item["id"]),
-                quantity=item["quantity"],
-                price=Decimal.from_float(item["price"]),
-                for_date=datetime.strptime(item["for_date"], '%Y-%m-%d').date(),
-                order_cfm=cfm_id_obj
-            ).save()
+                  child=Child.objects.get(id=item["child_id"]),
+                  product=Product.objects.get(id=item["id"]),
+                  quantity=item["quantity"],
+                  price=Decimal.from_float(item["price"]),
+                  for_date=datetime.strptime(item["for_date"], '%Y-%m-%d').date(),
+                  order_cfm=cfm_id_obj
+                  ).save()
         api_resp.update(status='success', payloads=[API_CODES.get("S-103"), {'confirmation_no': cfm_id_obj.order_cfm}])
         session_cleanup(request)
     else:

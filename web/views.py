@@ -1,30 +1,23 @@
-
 import logging
-from datetime import datetime
-from decimal import Decimal
 
-#import paypalrestsdk
-from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.http import (HttpResponseRedirect)
+from django.urls import (reverse_lazy)
 from django.utils.decorators import method_decorator
 from django.views.generic import (FormView, TemplateView, RedirectView, ListView)
-from django.urls import (reverse_lazy, reverse)
-from django.http import (HttpResponseRedirect, HttpResponse)
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
 
-from web.api import (get_all_products, get_all_children, get_cart_total)
-from web.forms import (ChildForm, ChangePasswordForm,
-                        UserForm, ParentProfileForm, LoginForm)
-from web.models import (Product, OrderConfirmationId, Order, Child, ParentProfile)
-
+from web import utils
+from web.api import (get_all_children, get_cart_total, get_products_by_date)
+from web.forms import (ChildForm, ChangePasswordForm, OrderDateForm,
+                       UserForm, ParentProfileForm, LoginForm)
+from web.models import (Order, ParentProfile)
 
 log = logging.getLogger(__name__)
 
 
 class LoginRequiredMixin(object):
-
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
@@ -169,20 +162,25 @@ class LogoutView(RedirectView):
 ##################################################################################################
 
 
-class OrderView(LoginRequiredMixin, TemplateView):
+class OrderView(LoginRequiredMixin, FormView):
+    form_class = OrderDateForm
     template_name = 'web/order.html'
-    min_dt = None
+    success_url = reverse_lazy('ol:order')
 
-    def get(self, request, *args, **kwargs):
-        dt = datetime.today()
-        return super(OrderView, self).get(request, *args, **kwargs)
+    def form_valid(self, form):
+        self.request.session["order_date"] = form["order_date"].data
+        return super(OrderView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super(OrderView, self).get_context_data(**kwargs)
+        order_date = self.request.session.get("order_date", None)
         context["page_header"] = "Available Items"
-        context["min_dt"] = None
-        context["product_list"] = get_all_products()
+        context["date_form"] = context.pop("form")
+        context["min_dt"] = utils.get_min_order_date_str()
+        context["max_dt"] = utils.get_max_order_date_str()
+        context["product_list"] = get_products_by_date(order_date) if order_date else None
         context["child_list"] = get_all_children(self.request.user)
+        self.request.session["order_date"] = None
         return context
 
 

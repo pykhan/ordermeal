@@ -1,45 +1,65 @@
 {% extends 'web/base.html' %}
+{% load widget_tweaks %}
 
 {% block page_body %}
-<div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-        <p class="lead">Instructions:</p>
-        <p>
-            Please make sure to select the correct child's name and desired date,
-            before adding any items to your cart. Your orders will be always
-            added for the child and the date selected.
-        </p>
-    </div>
-    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <p class="lead">Instructions:</p>
+            <p>
+                Please make sure to select the correct child's name and desired date,
+                before adding any items to your cart. Your orders will be always
+                added for the child and the date selected.
+            </p>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div class="form-group">
                 Child: <select id="child" class="form-control">
-                    {% for child in child_list %}
-                        <option value="{{child.id}}">{{child.first_name}} {{child.last_name}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-    </div>
-    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-        <div class="pull-right">
-            <div class="form-group">
-                Order Date: <input type="text" id="itemDate" value="" class="form-control" />
+                {% for child in child_list %}
+                    <option value="{{ child.id }}">{{ child.first_name }} {{ child.last_name }}</option>
+                {% endfor %}
+            </select>
             </div>
         </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">&nbsp;</div>
-    {% for p in product_list %}
-        <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
-            <div class="product text-center">
-                <div id="div_{{p.id}}" class="text-primary"><a href="javascript:showDescription({{p.id}});">{{p.name}}</a></div>
-                <div class="product-price">$ {{p.unit_price}}</div>
-                <a class="btn btn-info" id="btn_{{p.id}}"
-                    href="javascript:addToCart({{p.id}}, 'btn_{{p.id}}')" role="button">Add</a>
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="pull-right">
+                <div class="form-group">
+                    <form method="post" action="{% url 'ol:order' %}">
+                        {% csrf_token %}
+                        {{ date_form.as_p }}
+                        <button class="btn btn-success" type="submit">Go</button>
+                    </form>
+                </div>
             </div>
         </div>
-    {% endfor %}
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">&nbsp;</div>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <a class="btn btn-success" href="{% url 'ol:order-review' %}" role="button">Review Order</a>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">&nbsp;</div>
+        {% for p in product_list %}
+            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
+                <div class="product text-center">
+                    <div id="div_{{ p.id }}" class="text-primary"><a
+                            href="javascript:showDescription({{ p.id }});">{{ p.name }}</a></div>
+                    <div class="product-price">$ {{ p.unit_price }}</div>
+                    <a class="btn btn-info" id="btn_{{ p.id }}"
+                       href="javascript:addToCart({{ p.id }}, 'btn_{{ p.id }}')" role="button">Add</a>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">&nbsp;</div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <a class="btn btn-success" href="{% url 'ol:order-review' %}" role="button">Review Order</a>
+        </div>
     </div>
-</div>
+{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+    /* http://www.daterangepicker.com/ */
+    $('input[id="id_order_date"]').daterangepicker({
+        singleDatePicker: true,
+        showDropdowns: true,
+        minDate: "{{ min_dt }}",
+        maxDate: "{{ max_dt }}",
+        locale: {
+            format: appDateFormat
+        }
+    });
 {% endblock %}

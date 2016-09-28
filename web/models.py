@@ -1,14 +1,10 @@
-from datetime import datetime
-from decimal import Decimal
-
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from localflavor.us.models import PhoneNumberField
-from localflavor.us.us_states import STATE_CHOICES
 
-from web.utils import DAY_CHOICES, EVERY_WEEK_DAY
+from web.utils import DAY_CHOICES, EVERY_WEEK_DAY_NUM
 
 
 class ModelSaveMixin(object):
@@ -42,7 +38,6 @@ class ParentProfile(ModelSaveMixin, models.Model):
 class Child(ModelSaveMixin, models.Model):
     parent = models.ForeignKey(User, verbose_name=_('Parent'), blank=True, null=True)
     first_name = models.CharField(verbose_name=_('First Name'), max_length=30)
-    middle_name = models.CharField(verbose_name=_('Middle Name'), max_length=30, blank=True, null=True)
     last_name = models.CharField(verbose_name=_('Last Name'), max_length=30)
 
     def __str__(self):
@@ -70,7 +65,7 @@ class Product(ModelSaveMixin, models.Model):
     description = models.TextField(verbose_name=_('Description'), blank=True, null=True)
     is_active = models.BooleanField(verbose_name=_('Active ?'), default=True)
     expires_at = models.DateField(verbose_name=_('Expires At'), blank=True, null=True)
-    available_day = models.IntegerField(verbose_name=_('Day Available'), choices=DAY_CHOICES, default=EVERY_WEEK_DAY)
+    available_day = models.IntegerField(verbose_name=_('Day Available'), choices=DAY_CHOICES, default=EVERY_WEEK_DAY_NUM)
 
     def save(self, *args, **kwargs):
         if self.description.strip() == "":

@@ -1,10 +1,6 @@
-from datetime import date
-
 from django import forms
-from django.core import validators
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
-from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 
 from web.models import (ParentProfile, Child)
@@ -15,10 +11,9 @@ class LoginForm(AuthenticationForm):
 
 
 class ChildForm(forms.ModelForm):
-
     class Meta:
         model = Child
-        exclude = ('parent', )
+        exclude = ('parent',)
 
 
 class UserForm(forms.ModelForm):
@@ -30,16 +25,19 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'password', 'email', )
+        fields = ('username', 'first_name', 'last_name', 'password', 'email',)
 
 
 class ParentProfileForm(forms.ModelForm):
-
     class Meta:
         model = ParentProfile
-        exclude = ('user', 'is_membership_paid', )
+        exclude = ('user', 'is_membership_paid',)
 
 
 class ChangePasswordForm(forms.Form):
     password = forms.CharField(min_length=8, strip=False, widget=forms.PasswordInput())
     password_again = forms.CharField(min_length=8, strip=False, widget=forms.PasswordInput())
+
+
+class OrderDateForm(forms.Form):
+    order_date = forms.DateField(input_formats=["%Y-%m-%d"], widget=forms.TextInput(attrs={'class': 'form-control'}))

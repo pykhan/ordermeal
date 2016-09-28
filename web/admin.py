@@ -6,7 +6,7 @@ from web.models import (Product, Child, ParentProfile,
 
 @admin.register(Child)
 class ChildAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'middle_name', 'last_name', 'parent_name', )
+    list_display = ('first_name', 'last_name', 'parent_name', )
     empty_value_display = '-empty-'
 
     def parent_name(self, obj):
